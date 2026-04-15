@@ -48,8 +48,8 @@
   z-index: 1000;
   border-radius: 999px;
   background: var(--card-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
   transform: translateX(-50%) translateZ(0);
   backface-visibility: hidden;
   display: flex;
