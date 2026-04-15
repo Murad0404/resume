@@ -11,9 +11,6 @@
 .bento-box,
 .project-modal-overlay {
   will-change: backdrop-filter, -webkit-backdrop-filter;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  isolation: isolate;
 }
 
 /* Graceful fallback when backdrop-filter is unsupported or disabled */
