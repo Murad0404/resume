@@ -4,6 +4,29 @@
   position: relative;
 }
 
+/* Shared blur utility for more stable rendering on deployed builds */
+.blur-box,
+.navbar-container,
+.nav-links,
+.bento-box,
+.project-modal-overlay {
+  will-change: backdrop-filter, -webkit-backdrop-filter;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  isolation: isolate;
+}
+
+/* Graceful fallback when backdrop-filter is unsupported or disabled */
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .blur-box,
+  .navbar-container,
+  .nav-links,
+  .bento-box,
+  .project-modal-overlay {
+    background: var(--card-bg-hover);
+  }
+}
+
 /* Ambient Background Glow */
 .ambient-glow {
   position: fixed;
