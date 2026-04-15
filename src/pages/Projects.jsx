@@ -453,12 +453,12 @@ const Projects = () => {
         {filtered.map(project => (
           <motion.div
             key={project.id}
-            className={`project-card ${project.isFeatured ? 'project-card--featured' : ''}`}
+            className={`project-card ${project.isFeatured ? 'project-card--featured' : ''} project-card-${project.id}`}
             variants={cardVariants}
             whileHover={{ y: -6, transition: { duration: 0.3 } }}
             onClick={() => setSelectedProject(project)}
           >
-            <div className="pc-accent" style={{ background: project.color }} />
+
 
             {/* Featured image preview for Faol */}
             {project.isFeatured && project.images.length > 0 && (

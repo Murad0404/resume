@@ -10,7 +10,11 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
+import CourseAuth from './pages/CourseAuth';
+import CourseCatalog from './pages/CourseCatalog';
+import CourseDashboard from './pages/CourseDashboard';
 import AIChat from './components/AIChat';
+import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
 
 import { trackVisit } from './utils/analytics';
@@ -58,19 +62,24 @@ const App = () => {
   return (
     <LanguageProvider>
       <ModalProvider>
-        <Router>
-          <PageViewTracker />
-          <Layout>
-            <AnimatePresence mode="wait">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/projects" element={<Projects />} />
-                <Route path="/project/:id" element={<ProjectDetail />} />
-              </Routes>
-            </AnimatePresence>
-          </Layout>
-        </Router>
+        <AuthProvider>
+          <Router>
+            <PageViewTracker />
+            <Layout>
+              <AnimatePresence mode="wait">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/projects" element={<Projects />} />
+                  <Route path="/project/:id" element={<ProjectDetail />} />
+                  <Route path="/course-auth" element={<CourseAuth />} />
+                  <Route path="/course-catalog" element={<CourseCatalog />} />
+                  <Route path="/course-dashboard" element={<CourseDashboard />} />
+                </Routes>
+              </AnimatePresence>
+            </Layout>
+          </Router>
+        </AuthProvider>
       </ModalProvider>
     </LanguageProvider>
   );

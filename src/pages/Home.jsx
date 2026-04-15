@@ -35,10 +35,11 @@ const Home = () => {
   ];
 
   const homeProjects = [
-    { id: 6,  tag: 'JAVA ENGINEER',  title: 'MIO BEAUTY',          desc: 'REST API Backend',      link: '/projects', img: mioBeautyImg },
-    { id: 1,  tag: 'MIDDLE UX/UI',   title: 'DATAGAZE',             desc: t.stats?.cyber || 'Cybersecurity UX/UI', link: '/projects', img: datagazeImg },
     { id: 10, tag: 'UX/UI DESIGN',   title: 'UPDIVE',               desc: 'Enterprise Dashboard',  link: '/projects', img: updiveBrandImg },
+    { id: 1,  tag: 'MIDDLE UX/UI',   title: 'DATAGAZE',             desc: t.stats?.cyber || 'Cybersecurity UX/UI', link: '/projects', img: datagazeImg },
+    { id: 6,  tag: 'JAVA ENGINEER',  title: 'MIO BEAUTY',          desc: 'REST API Backend',      link: '/projects', img: mioBeautyImg },
     { id: 4,  tag: 'JAVA DEVELOPER', title: 'KPI.com',              desc: 'ERP Module Development', link: '/projects', img: kpiImg },
+    { id: 5,  tag: 'GRAPHIC DESIGN', title: 'Ahmad Tea',            desc: 'Social Media Visuals',   link: '/projects', img: ahmadTea1 },
     { id: 7,  tag: 'GRAPHIC DESIGN', title: 'Datasite Technology',  desc: 'Graphic Design',         link: '/projects', img: datasiteImg },
   ];
 
@@ -119,7 +120,7 @@ const Home = () => {
 
         {/* PROJECTS TO GRID */}
         {homeProjects.map(p => (
-          <motion.div key={p.id} className="bento-box bento-project">
+          <motion.div key={p.id} className={`bento-box bento-project project-${p.id}`}>
             <div className="project-img-wrapper" style={!p.img ? { background: 'var(--card-bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center' } : {}}>
               {p.img ? (
                 <img src={p.img} alt={p.title} />

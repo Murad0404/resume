@@ -48,6 +48,7 @@ const Navbar = () => {
           <Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>{t.nav.work}</Link>
           <Link to="/projects" className={location.pathname === '/projects' ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>{t.nav.projects}</Link>
           <Link to="/about" className={location.pathname === '/about' ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>{t.nav.about}</Link>
+          <Link to="/course-catalog" className={location.pathname.includes('/course') ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>{lang === 'uz' ? 'Kurslar' : lang === 'ru' ? 'Курсы' : 'Courses'}</Link>
           
           <div className="nav-actions">
             <button onClick={toggleLang} className="lang-toggle">
