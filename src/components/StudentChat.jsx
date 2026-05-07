@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, User as UserIcon, MessageSquare } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { otpService } from '../services/otpService';
 
 const StudentChat = () => {
-  const { user } = useAuth();
+  const session = otpService.getSession();
   const [messages, setMessages] = useState([
     { id: 1, text: "Assalomu alaykum! Kursga xush kelibsiz. Tushunmagan joylaringiz bo'lsa shu yerda so'rashingiz mumkin.", isAdmin: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
   ]);
@@ -14,9 +14,11 @@ const StudentChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  // Auto-scroll disabled per user request
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [messages]);
+
 
   const handleSend = (e) => {
     e.preventDefault();

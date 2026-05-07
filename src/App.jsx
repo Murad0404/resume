@@ -13,6 +13,10 @@ import ProjectDetail from './pages/ProjectDetail';
 import CourseAuth from './pages/CourseAuth';
 import CourseCatalog from './pages/CourseCatalog';
 import CourseDashboard from './pages/CourseDashboard';
+import PromptMarketplace from './pages/PromptMarketplace';
+import PromptDashboard from './pages/PromptDashboard';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 import AIChat from './components/AIChat';
 import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
@@ -75,6 +79,10 @@ const App = () => {
                   <Route path="/course-auth" element={<CourseAuth />} />
                   <Route path="/course-catalog" element={<CourseCatalog />} />
                   <Route path="/course-dashboard" element={<CourseDashboard />} />
+                  <Route path="/prompts" element={<PromptMarketplace />} />
+                  <Route path="/prompt-dashboard" element={<PromptDashboard />} />
+                  <Route path="/secret-admin" element={<AdminLogin />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
                 </Routes>
               </AnimatePresence>
             </Layout>

@@ -30,7 +30,7 @@ export const ModalProvider = ({ children }) => {
     setFormSubmitted(true);
     
     // Telegram Bot Integration
-    const BOT_TOKEN = '8694533172:AAHtmqh_OxY6o0C-kEv-CEs3K7AkdcsGGXs';
+    const BOT_TOKEN = '8697069079:AAHKkQ6FDAQ4q5hSx6UKoCUmoQjvPZl5d74';
     // IMPORTANT: Replace with your numerical Chat ID (e.g. 1954153093)
     // You can get it by messaging your bot and checking https://api.telegram.org/bot<TOKEN>/getUpdates
     const CHAT_ID = '635476813'; 

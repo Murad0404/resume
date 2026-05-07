@@ -18,11 +18,12 @@ const AIChat = () => {
     }
   }, [t, messages.length]);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages, isTyping]);
+  // Auto-scroll disabled per user request
+  // useEffect(() => {
+  //   if (scrollRef.current) {
+  //     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  //   }
+  // }, [messages, isTyping]);
 
   const handleSend = () => {
     if (!input.trim()) return;
