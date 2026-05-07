@@ -2,6 +2,38 @@ import { supabase as _supabase } from '../utils/supabaseClient';
 
 const STORAGE_KEY = 'resume_site_data';
 
+// One-time clear of all current users list from database as per user request
+if (!localStorage.getItem('db_users_cleared_may7')) {
+  localStorage.setItem('registered_users', JSON.stringify({}));
+  localStorage.removeItem('user_session');
+  localStorage.removeItem('user_cards');
+  localStorage.removeItem('hasPurchasedPrompts');
+  
+  // Clear all purchased and payment status keys
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('purchased_') || key.startsWith('payment_status_') || key.startsWith('completed_vids_') || key.startsWith('otp_')) {
+      localStorage.removeItem(key);
+    }
+  });
+
+  // Clear messages inside STORAGE_KEY
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      parsed.messages = [
+        { id: 'm-1', text: "Assalomu alaykum! Kursga xush kelibsiz. Tushunmagan joylaringiz bo'lsa shu yerda so'rashingiz mumkin.", isAdmin: true, userId: 'system', userName: 'Admin', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
+      ];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
+  localStorage.setItem('db_users_cleared_may7', 'true');
+}
+
+
 // Convert any YouTube URL to embed format
 export const toYouTubeEmbed = (url) => {
   if (!url) return '';

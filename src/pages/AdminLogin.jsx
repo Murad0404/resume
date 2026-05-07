@@ -15,9 +15,9 @@ const AdminLogin = () => {
 
   const handleRequestOtp = async (e) => {
     e.preventDefault();
-    const cleanUsername = username.trim().toLowerCase();
+    const cleanUsername = username.trim();
     
-    if (cleanUsername === 'murod' || cleanUsername === 'admin') {
+    if (cleanUsername === 'MD9902admin') {
       setLoading(true);
       setError('');
       

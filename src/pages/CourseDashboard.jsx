@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { PlayCircle, Lock, Monitor, LogOut, ChevronRight } from 'lucide-react';
+import { PlayCircle, Lock, Monitor, LogOut, ChevronRight, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import StudentChat from '../components/StudentChat';
@@ -16,6 +16,8 @@ const CourseDashboard = () => {
   const [purchasedModules, setPurchasedModules] = useState([]);
   const [allModules, setAllModules] = useState([]);
   const [session, setSession] = useState(() => otpService.getSession());
+  const [completedVids, setCompletedVids] = useState([]);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   useEffect(() => {
     if (!session) {
@@ -34,6 +36,10 @@ const CourseDashboard = () => {
       if (purchased[0].videos && purchased[0].videos.length > 0) {
         setActiveVideo(purchased[0].videos[0]);
       }
+    }
+
+    if (session) {
+      setCompletedVids(JSON.parse(localStorage.getItem(`completed_vids_${session.contact}`) || '[]'));
     }
   }, [session, navigate]);
 
@@ -54,12 +60,41 @@ const CourseDashboard = () => {
           <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{lang === 'uz' ? "O'quv Paneli" : lang === 'ru' ? "Учебная панель" : "Learning Panel"}</h1>
           <p style={{ color: 'var(--text-muted)' }}>{lang === 'uz' ? 'Xush kelibsiz' : lang === 'ru' ? 'Добро пожаловать' : 'Welcome'}, {session?.name || session?.contact}</p>
         </div>
-        <button onClick={handleLogout} className="submit-form-btn" style={{ background: 'transparent', border: '1px solid var(--card-border)', color: 'var(--text-main)' }}>
-          <LogOut size={18} /> {lang === 'uz' ? 'Chiqish' : lang === 'ru' ? 'Выйти' : 'Log out'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button 
+            onClick={() => setShowProfileModal(true)}
+            className="submit-form-btn" 
+            style={{ 
+              background: 'var(--accent)', 
+              color: '#fff', 
+              border: 'none', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem',
+              cursor: 'pointer'
+            }}
+          >
+            <User size={18} /> {lang === 'uz' ? 'Profil' : lang === 'ru' ? 'Профиль' : 'Profile'}
+          </button>
+          <button 
+            onClick={handleLogout} 
+            className="submit-form-btn" 
+            style={{ 
+              background: 'transparent', 
+              border: '1px solid var(--card-border)', 
+              color: 'var(--text-main)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              cursor: 'pointer'
+            }}
+          >
+            <LogOut size={18} /> {lang === 'uz' ? 'Chiqish' : lang === 'ru' ? 'Выйти' : 'Log out'}
+          </button>
+        </div>
       </div>
 
-      <div style={{ flex: 1, padding: '0 2rem 2rem 2rem', maxWidth: '1400px', margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '300px 1fr 350px', gap: '1.5rem', height: 'calc(100vh - 200px)' }}>
+      <div className="course-dashboard-grid" style={{ flex: 1, padding: '0 2rem 2rem 2rem', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
         
         {/* Sidebar: Navigation */}
         <div style={{ background: 'var(--card-bg)', borderRadius: '24px', border: '1px solid var(--card-border)', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
@@ -159,7 +194,40 @@ const CourseDashboard = () => {
                 />
               </div>
               <div style={{ padding: '2rem' }}>
-                <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{activeVideo.title}</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.75rem' }}>
+                  <h2 style={{ fontSize: '1.5rem', margin: 0 }}>{activeVideo.title}</h2>
+                  <button 
+                    onClick={() => {
+                      const storageKey = `completed_vids_${session?.contact}`;
+                      const completed = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                      if (completed.includes(activeVideo.id)) {
+                        const filtered = completed.filter(id => id !== activeVideo.id);
+                        localStorage.setItem(storageKey, JSON.stringify(filtered));
+                      } else {
+                        completed.push(activeVideo.id);
+                        localStorage.setItem(storageKey, JSON.stringify(completed));
+                      }
+                      setCompletedVids(JSON.parse(localStorage.getItem(storageKey) || '[]'));
+                    }}
+                    style={{
+                      background: completedVids.includes(activeVideo.id) ? 'rgba(34, 197, 94, 0.1)' : 'rgba(90, 107, 250, 0.1)',
+                      color: completedVids.includes(activeVideo.id) ? '#22c55e' : 'var(--accent)',
+                      border: '1px solid',
+                      borderColor: completedVids.includes(activeVideo.id) ? 'rgba(34, 197, 94, 0.3)' : 'rgba(90, 107, 250, 0.3)',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {completedVids.includes(activeVideo.id) ? '✓ Tugatildi' : 'Darsni tugatdim'}
+                  </button>
+                </div>
                 <span style={{ color: 'var(--accent)', fontSize: '0.9rem', fontWeight: 600 }}>
                   {activeModule?.title}
                 </span>
@@ -172,7 +240,7 @@ const CourseDashboard = () => {
         </div>
 
         {/* Right Sidebar: Chat */}
-        <div style={{ height: '100%' }}>
+        <div className="course-dashboard-chat-col">
           {purchasedModules.length > 0 ? (
             <StudentChat />
           ) : (
@@ -183,6 +251,140 @@ const CourseDashboard = () => {
         </div>
 
       </div>
+
+      {showProfileModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: '1rem'
+        }}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{
+              background: 'var(--card-bg)',
+              border: '1px solid var(--card-border)',
+              borderRadius: '24px',
+              padding: '2.5rem',
+              maxWidth: '550px',
+              width: '100%',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+              color: 'var(--text-main)',
+              position: 'relative'
+            }}
+          >
+            {/* Close Button */}
+            <button 
+              onClick={() => setShowProfileModal(false)}
+              style={{
+                position: 'absolute', top: '1.25rem', right: '1.25rem',
+                background: 'rgba(255,255,255,0.05)', border: 'none',
+                color: 'var(--text-muted)', width: '36px', height: '36px',
+                borderRadius: '50%', cursor: 'pointer', display: 'flex',
+                alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+              }}
+            >
+              ✕
+            </button>
+
+            {/* Profile Avatar & Header */}
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <div style={{
+                width: '90px', height: '90px', borderRadius: '50%',
+                background: 'linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%)',
+                margin: '0 auto 1rem auto', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', color: '#fff', fontSize: '2.5rem',
+                fontWeight: 800, border: '4px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 10px 20px rgba(90,107,250,0.3)'
+              }}>
+                {session?.name ? session.name[0].toUpperCase() : 'U'}
+              </div>
+              <h2 style={{ fontSize: '1.6rem', marginBottom: '0.25rem' }}>{session?.name || "O'quvchi"}</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: 0 }}>{session?.contact}</p>
+            </div>
+
+            {/* Stats Cards Row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--card-border)', padding: '1.25rem', borderRadius: '16px', textAlign: 'center' }}>
+                <span style={{ display: 'block', fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent)', marginBottom: '0.25rem' }}>
+                  {purchasedModules.length}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Faol Modullar</span>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--card-border)', padding: '1.25rem', borderRadius: '16px', textAlign: 'center' }}>
+                <span style={{ display: 'block', fontSize: '1.8rem', fontWeight: 800, color: '#22c55e', marginBottom: '0.25rem' }}>
+                  {completedVids.length}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Tugatilgan Darslar</span>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            {(() => {
+              const totalVids = purchasedModules.reduce((acc, c) => acc + (c.videos?.length || 0), 0);
+              const progressPercent = totalVids > 0 ? Math.round((completedVids.length / totalVids) * 100) : 0;
+
+              return (
+                <div style={{ marginBottom: '2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--card-border)', padding: '1.5rem', borderRadius: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.9rem', fontWeight: 600 }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Umumiy O'zlashtirish</span>
+                    <span style={{ color: 'var(--accent)' }}>{progressPercent}%</span>
+                  </div>
+                  <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                    <motion.div 
+                      initial={{ width: 0 }} 
+                      animate={{ width: `${progressPercent}%` }} 
+                      style={{ height: '100%', background: 'linear-gradient(90deg, var(--accent), #3b82f6)', borderRadius: '4px' }} 
+                    />
+                  </div>
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', textAlign: 'right' }}>
+                    {completedVids.length} / {totalVids} dars tugatildi
+                  </span>
+                </div>
+              );
+            })()}
+
+            {/* Active Modules List */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Mening Modullarim</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '180px', overflowY: 'auto', paddingRight: '0.25rem' }}>
+                {purchasedModules.map(mod => {
+                  const modVids = mod.videos || [];
+                  const completedInMod = modVids.filter(v => completedVids.includes(v.id)).length;
+                  const percent = modVids.length > 0 ? Math.round((completedInMod / modVids.length) * 100) : 0;
+
+                  return (
+                    <div key={mod.id} style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--card-border)', padding: '1rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.25rem' }}>{mod.title}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{completedInMod} / {modVids.length} dars ({percent}%)</div>
+                      </div>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: percent === 100 ? '#22c55e' : 'var(--accent)' }}>
+                        {percent === 100 ? 'Tugatildi ✓' : `${percent}%`}
+                      </div>
+                    </div>
+                  );
+                })}
+                {purchasedModules.length === 0 && (
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '1rem' }}>
+                    Sizda hali sotib olingan modullar mavjud emas.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <button 
+              onClick={() => setShowProfileModal(false)}
+              className="submit-form-btn" 
+              style={{ width: '100%', marginTop: '1rem' }}
+            >
+              Yopish
+            </button>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, User as UserIcon, MessageSquare } from 'lucide-react';
 import { otpService } from '../services/otpService';
+import { dataService } from '../services/dataService';
 
 const StudentChat = () => {
   const session = otpService.getSession();
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Assalomu alaykum! Kursga xush kelibsiz. Tushunmagan joylaringiz bo'lsa shu yerda so'rashingiz mumkin.", isAdmin: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
@@ -14,35 +13,40 @@ const StudentChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Auto-scroll disabled per user request
+  const loadMessages = () => {
+    if (session) {
+      const msgs = dataService.getMessagesByUser(session.contact) || [];
+      setMessages(msgs);
+    }
+  };
+
+  useEffect(() => {
+    loadMessages();
+    
+    // Poll for new admin replies every 4 seconds
+    const interval = setInterval(() => {
+      loadMessages();
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [session]);
+
+  // Scroll to bottom when new messages arrive (disabled per user request)
   // useEffect(() => {
   //   scrollToBottom();
   // }, [messages]);
 
-
   const handleSend = (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || !session) return;
 
-    const newMsg = {
-      id: Date.now(),
-      text: input,
-      isAdmin: false,
-      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-    };
-
-    setMessages([...messages, newMsg]);
+    const textToSend = input;
     setInput('');
 
-    // Simulate auto-reply for MVP
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        id: Date.now() + 1,
-        text: "Xabaringiz qabul qilindi. Tez orada javob beraman!",
-        isAdmin: true,
-        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-      }]);
-    }, 1500);
+    // Save locally
+    const newMsg = dataService.addMessage(textToSend, false, session.contact, session.name);
+    setMessages(prev => [...prev, newMsg]);
+    setTimeout(scrollToBottom, 50);
   };
 
   return (

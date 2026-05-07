@@ -29,9 +29,17 @@ const CourseCatalog = () => {
   };
 
   const handleOTPSuccess = () => {
-    setSession(otpService.getSession());
+    const activeSession = otpService.getSession();
+    setSession(activeSession);
     setOtpModal(false);
-    if (pendingModule) setPurchaseModal(pendingModule);
+    if (pendingModule) {
+      const isPurchased = localStorage.getItem(`purchased_${pendingModule.id}`) === 'true';
+      if (isPurchased) {
+        navigate('/course-dashboard');
+      } else {
+        setPurchaseModal(pendingModule);
+      }
+    }
     setPendingModule(null);
   };
 
@@ -151,6 +159,11 @@ const CourseCatalog = () => {
                   const isPurchased = localStorage.getItem(`purchased_${mod.id}`) === 'true';
                   const isPending = localStorage.getItem(`payment_status_${mod.id}`) === 'pending';
                   if (isPurchased) {
+                    if (!session) {
+                      setPendingModule(mod);
+                      setOtpModal(true);
+                      return;
+                    }
                     navigate('/course-dashboard');
                   } else if (isPending) {
                     alert("Sizning to'lovingiz adminga yuborilgan. Iltimos, tasdiqlanishini kuting.");

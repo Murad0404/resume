@@ -34,6 +34,7 @@ const AdminDashboardInner = () => {
   const prevMessageCount = useRef(0);
   const messagesEndRef = useRef(null);
   const [payments, setPayments] = useState([]);
+  const [pricingPlans, setPricingPlans] = useState([]);
 
   // Form states
   const [newPrompt, setNewPrompt] = useState({ title: '', category: '', prompt: '', image: '', isFree: false });
@@ -48,6 +49,7 @@ const AdminDashboardInner = () => {
     setStats(s || { visitors: 0, todayVisits: 0, sales: 0, courseSales: {}, dailyVisits: {} });
     setPrompts(dataService.getPrompts() || []);
     setCourses(dataService.getCourses() || []);
+    setPricingPlans(dataService.getPricingPlans() || []);
     
     const allMsgs = dataService.getMessages() || [];
     setMessages(allMsgs);
@@ -222,6 +224,7 @@ const AdminDashboardInner = () => {
       
       const item = list[index];
       localStorage.setItem(`purchased_${item.itemId}`, 'true');
+      localStorage.setItem(`purchased_${item.itemId}_at`, Date.now().toString());
       localStorage.setItem(`payment_status_${item.itemId}`, 'approved');
       
       if (item.itemType === 'prompt') {
@@ -293,7 +296,7 @@ const AdminDashboardInner = () => {
         </div>
       </div>
 
-      <div className="bento-box" style={{ padding: '1rem', marginBottom: '2rem', display: 'flex', gap: '1rem', overflowX: 'auto' }}>
+      <div className="bento-box" style={{ padding: '1rem', marginBottom: '2rem', display: 'flex', flexDirection: 'row', gap: '1rem', overflowX: 'auto' }}>
         <button style={tabStyle('stats')} onClick={() => setActiveTab('stats')}>
           <LayoutDashboard size={18} /> Statistika
         </button>
@@ -537,7 +540,7 @@ const AdminDashboardInner = () => {
         {activeTab === 'pricing' && (
           <motion.div key="pricing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
-              {dataService.getPricingPlans().map(plan => (
+              {pricingPlans.map(plan => (
                 <div key={plan.id} className="bento-box" style={{ padding: '2rem' }}>
                   <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <CreditCard color={plan.color} /> {plan.title} Tarifini Tahrirlash
@@ -549,7 +552,12 @@ const AdminDashboardInner = () => {
                       <input 
                         style={inputStyle} 
                         value={plan.title} 
-                        onChange={e => dataService.updatePricingPlan(plan.id, { title: e.target.value })} 
+                        onChange={e => {
+                          const updatedVal = e.target.value;
+                          const updatedPlans = pricingPlans.map(p => p.id === plan.id ? { ...p, title: updatedVal } : p);
+                          setPricingPlans(updatedPlans);
+                          dataService.updatePricingPlan(plan.id, { title: updatedVal });
+                        }} 
                       />
                     </div>
                     
@@ -559,7 +567,12 @@ const AdminDashboardInner = () => {
                         <input 
                           style={inputStyle} 
                           value={plan.price} 
-                          onChange={e => dataService.updatePricingPlan(plan.id, { price: e.target.value })} 
+                          onChange={e => {
+                            const updatedVal = e.target.value;
+                            const updatedPlans = pricingPlans.map(p => p.id === plan.id ? { ...p, price: updatedVal } : p);
+                            setPricingPlans(updatedPlans);
+                            dataService.updatePricingPlan(plan.id, { price: updatedVal });
+                          }} 
                         />
                       </div>
                       <div>
@@ -567,8 +580,13 @@ const AdminDashboardInner = () => {
                         <input 
                           style={inputStyle} 
                           placeholder="Bo'sh qoldiring"
-                          value={plan.discountPrice} 
-                          onChange={e => dataService.updatePricingPlan(plan.id, { discountPrice: e.target.value })} 
+                          value={plan.discountPrice || ''} 
+                          onChange={e => {
+                            const updatedVal = e.target.value;
+                            const updatedPlans = pricingPlans.map(p => p.id === plan.id ? { ...p, discountPrice: updatedVal } : p);
+                            setPricingPlans(updatedPlans);
+                            dataService.updatePricingPlan(plan.id, { discountPrice: updatedVal });
+                          }} 
                         />
                       </div>
                     </div>
