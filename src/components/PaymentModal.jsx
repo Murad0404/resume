@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, CreditCard, Shield, CheckCircle, AlertCircle, Copy, Upload, Image } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { otpService } from '../services/otpService';
+import { supabase } from '../utils/supabaseClient';
 
 const PaymentModal = ({ isOpen, onClose, onSuccess, itemTitle, itemPrice, itemId, itemType }) => {
   const [step, setStep] = useState('p2p'); // 'p2p' | 'processing' | 'success'
@@ -90,62 +91,57 @@ const PaymentModal = ({ isOpen, onClose, onSuccess, itemTitle, itemPrice, itemId
         method: 'POST',
         body: formData
       });
-
       const data = await res.json();
-
-      const newRequest = {
-        id: `pay-${Date.now()}`,
-        userId: session?.contact || 'anonymous',
-        userName: session?.name || 'Foydalanuvchi',
-        itemId: itemId,
-        itemTitle: itemTitle,
-        itemPrice: itemPrice,
-        itemType: itemType,
-        receiptImage: previewUrl,
-        status: 'pending',
-        time: new Date().toLocaleString()
-      };
-
-      const existingStored = localStorage.getItem('payment_requests');
-      const list = existingStored ? JSON.parse(existingStored) : [];
-      list.push(newRequest);
-      localStorage.setItem('payment_requests', JSON.stringify(list));
-      localStorage.setItem(`payment_status_${itemId}`, 'pending');
-
-      setStep('success');
-      setTimeout(() => {
-        if (onSuccess) onSuccess();
-        onClose();
-      }, 3000);
     } catch (err) {
-      console.error("Payment sending error:", err);
-      // Fallback: save local request even if fetch failed so admin can see it in dashboard
-      const newRequest = {
-        id: `pay-${Date.now()}`,
-        userId: session?.contact || 'anonymous',
-        userName: session?.name || 'Foydalanuvchi',
-        itemId: itemId,
-        itemTitle: itemTitle,
-        itemPrice: itemPrice,
-        itemType: itemType,
-        receiptImage: previewUrl,
-        status: 'pending',
-        time: new Date().toLocaleString()
-      };
-      const existingStored = localStorage.getItem('payment_requests');
-      const list = existingStored ? JSON.parse(existingStored) : [];
-      list.push(newRequest);
-      localStorage.setItem('payment_requests', JSON.stringify(list));
-      localStorage.setItem(`payment_status_${itemId}`, 'pending');
-
-      setStep('success');
-      setTimeout(() => {
-        if (onSuccess) onSuccess();
-        onClose();
-      }, 3000);
-    } finally {
-      setLoading(false);
+      console.warn("Telegram bot send error, but proceeding with database save:", err);
     }
+
+    const newRequest = {
+      id: `pay-${Date.now()}`,
+      userId: session?.contact || 'anonymous',
+      userName: session?.name || 'Foydalanuvchi',
+      itemId: itemId,
+      itemTitle: itemTitle,
+      itemPrice: itemPrice,
+      itemType: itemType,
+      receiptImage: previewUrl,
+      status: 'pending',
+      time: new Date().toLocaleString()
+    };
+
+    // 1. Save locally for instant UI feedback
+    const existingStored = localStorage.getItem('payment_requests');
+    const list = existingStored ? JSON.parse(existingStored) : [];
+    list.push(newRequest);
+    localStorage.setItem('payment_requests', JSON.stringify(list));
+    localStorage.setItem(`payment_status_${itemId}`, 'pending');
+
+    // 2. Save globally to Supabase if configured
+    try {
+      if (supabase) {
+        await supabase.from('payment_requests').insert([{
+          id: newRequest.id,
+          user_id: newRequest.userId,
+          user_name: newRequest.userName,
+          item_id: newRequest.itemId,
+          item_title: newRequest.itemTitle,
+          item_price: newRequest.itemPrice,
+          item_type: newRequest.itemType,
+          receipt_image: newRequest.receiptImage,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        }]);
+      }
+    } catch (dbErr) {
+      console.warn("Global database sync failed, using local storage fallback:", dbErr);
+    }
+
+    setStep('success');
+    setTimeout(() => {
+      if (onSuccess) onSuccess();
+      onClose();
+    }, 3000);
+    setLoading(false);
   };
 
   if (!isOpen) return null;

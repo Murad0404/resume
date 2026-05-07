@@ -50,3 +50,22 @@ CREATE POLICY "Users can insert purchases" ON public.purchases FOR INSERT WITH C
 
 CREATE POLICY "Users can read own messages" ON public.course_messages FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert messages" ON public.course_messages FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- 6. Payment Requests table
+CREATE TABLE public.payment_requests (
+  id text PRIMARY KEY,
+  user_id text,
+  user_name text,
+  item_id text,
+  item_title text,
+  item_price text,
+  item_type text,
+  receipt_image text,
+  status text DEFAULT 'pending', -- 'pending', 'approved', 'rejected'
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Disable RLS or set policy for payment requests to allow global sync
+ALTER TABLE public.payment_requests ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Enable read/write for all users" ON public.payment_requests FOR ALL USING (true);
+

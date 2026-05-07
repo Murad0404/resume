@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Users, CreditCard, Plus, Trash2, LogOut, Video, Sparkles, LayoutDashboard, MessageSquare, Send, CheckCircle, Edit2, X, Bell, Image } from 'lucide-react';
 import { dataService, toYouTubeEmbed } from '../services/dataService';
+import { supabase } from '../utils/supabaseClient';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -55,8 +56,36 @@ const AdminDashboardInner = () => {
     setMessages(allMsgs);
     setUserThreads(dataService.getAllUserThreads() || []);
 
-    const storedPayments = localStorage.getItem('payment_requests');
-    setPayments(storedPayments ? JSON.parse(storedPayments) : []);
+    try {
+      if (supabase) {
+        const { data, error } = await supabase.from('payment_requests').select('*').order('created_at', { ascending: true });
+        if (data && !error) {
+          const mapped = data.map(item => ({
+            id: item.id,
+            userId: item.user_id,
+            userName: item.user_name,
+            itemId: item.item_id,
+            itemTitle: item.item_title,
+            itemPrice: item.item_price,
+            itemType: item.item_type,
+            receiptImage: item.receipt_image,
+            status: item.status,
+            time: new Date(item.created_at).toLocaleString()
+          }));
+          setPayments(mapped);
+          localStorage.setItem('payment_requests', JSON.stringify(mapped));
+        } else {
+          const storedPayments = localStorage.getItem('payment_requests');
+          setPayments(storedPayments ? JSON.parse(storedPayments) : []);
+        }
+      } else {
+        const storedPayments = localStorage.getItem('payment_requests');
+        setPayments(storedPayments ? JSON.parse(storedPayments) : []);
+      }
+    } catch (err) {
+      const storedPayments = localStorage.getItem('payment_requests');
+      setPayments(storedPayments ? JSON.parse(storedPayments) : []);
+    }
 
     // Notification Logic
     if (prevMessageCount.current > 0 && allMsgs.length > prevMessageCount.current) {
@@ -214,7 +243,7 @@ const AdminDashboardInner = () => {
     loadDashboardData();
   };
 
-  const handleApprovePayment = (id) => {
+  const handleApprovePayment = async (id) => {
     const stored = localStorage.getItem('payment_requests');
     const list = stored ? JSON.parse(stored) : [];
     const index = list.findIndex(p => p.id === id);
@@ -232,11 +261,20 @@ const AdminDashboardInner = () => {
       }
       
       dataService.registerSale(item.itemType === 'course' ? item.itemId : null);
+
+      try {
+        if (supabase) {
+          await supabase.from('payment_requests').update({ status: 'approved' }).eq('id', id);
+        }
+      } catch (dbErr) {
+        console.warn("Could not sync approval to Supabase:", dbErr);
+      }
+
       loadDashboardData();
     }
   };
 
-  const handleRejectPayment = (id) => {
+  const handleRejectPayment = async (id) => {
     if (confirm("Ushbu to'lovni rad etishni xohlaysizmi?")) {
       const stored = localStorage.getItem('payment_requests');
       const list = stored ? JSON.parse(stored) : [];
@@ -248,6 +286,14 @@ const AdminDashboardInner = () => {
         const item = list[index];
         localStorage.removeItem(`purchased_${item.itemId}`);
         localStorage.setItem(`payment_status_${item.itemId}`, 'rejected');
+
+        try {
+          if (supabase) {
+            await supabase.from('payment_requests').update({ status: 'rejected' }).eq('id', id);
+          }
+        } catch (dbErr) {
+          console.warn("Could not sync rejection to Supabase:", dbErr);
+        }
         
         loadDashboardData();
       }
