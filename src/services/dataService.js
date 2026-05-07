@@ -1,4 +1,7 @@
 import { supabase as _supabase } from '../utils/supabaseClient';
+import restorationImg from '../assets/prompts/restoration.png';
+import videoImg from '../assets/prompts/video.png';
+import mediaImg from '../assets/prompts/media.png';
 
 const STORAGE_KEY = 'resume_site_data';
 
@@ -91,7 +94,7 @@ const defaultData = {
       category: 'Restoration',
       title: 'Professional Old Photo Restoration',
       prompt: 'A highly detailed restoration of a vintage 1920s photograph. Remove scratches, enhance facial features naturally, keep the sepia tone but increase dynamic range. 8k resolution, realistic textures.',
-      image: '/src/assets/prompts/restoration.png',
+      image: restorationImg,
       isFree: true
     },
     {
@@ -99,7 +102,7 @@ const defaultData = {
       category: 'Video',
       title: 'Cinematic Sci-Fi City Reveal',
       prompt: 'Drone shot flying over a futuristic cyberpunk city at neon-lit night, flying cars, rain reflecting neon lights, cinematic lighting, photorealistic, Unreal Engine 5 render style.',
-      image: '/src/assets/prompts/video.png',
+      image: videoImg,
       isFree: false
     },
     {
@@ -107,7 +110,7 @@ const defaultData = {
       category: 'Media',
       title: 'Luxury Perfume Product Ad',
       prompt: 'A sleek, modern 3D advertising graphic for a luxury perfume bottle. The background is a minimalist silk texture with soft studio lighting, gold accents, and a premium feel. Professional commercial photography style.',
-      image: '/src/assets/prompts/media.png',
+      image: mediaImg,
       isFree: false
     }
   ],
@@ -163,6 +166,22 @@ const loadData = () => {
       if (!parsed.stats.courseSales) parsed.stats.courseSales = {};
       if (!parsed.messages) parsed.messages = defaultData.messages;
       if (!parsed.pricingPlans) parsed.pricingPlans = defaultData.pricingPlans;
+      
+      // Clean old hardcoded paths in local storage if they exist
+      if (parsed.prompts) {
+        parsed.prompts = parsed.prompts.map(p => {
+          if (p.id === 'p-1' && (!p.image || p.image.includes('/src/assets/prompts/restoration.png'))) {
+            p.image = restorationImg;
+          }
+          if (p.id === 'p-2' && (!p.image || p.image.includes('/src/assets/prompts/video.png'))) {
+            p.image = videoImg;
+          }
+          if (p.id === 'p-3' && (!p.image || p.image.includes('/src/assets/prompts/media.png'))) {
+            p.image = mediaImg;
+          }
+          return p;
+        });
+      }
       return parsed;
     }
     // Save default if not exists
