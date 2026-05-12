@@ -24,9 +24,7 @@ import updiveEdr3 from '../assets/updive/edr-3.png';
 import ahmadTea1 from '../assets/ahmadtea/ahmad-1.jpg';
 import ahmadTea2 from '../assets/ahmadtea/ahmad-2.jpg';
 
-const FAOL_FIGMA = 'https://www.figma.com/design/heVsSmhOoLoCY1Z4BVSOg0/Untitled?node-id=13-1876&t=Z9jTcPD0gfyc3D1w-1';
-const UPDIVE_SIEM_FIGMA = 'https://www.figma.com/design/MGfu2i3H8fN88KBDu1sTUw/Untitled?node-id=140-25525&t=2RIynajXfujjD3eR-1';
-const UPDIVE_EDR_FIGMA = 'https://www.figma.com/design/rAMv4ycG3GNvNBfCWzQTsi/EDR?node-id=8-8187&t=hYOovscMRwHTXTgl-1';
+const BEHANCE_URL = 'https://www.behance.net/muroddadaboev';
 
 const projectsData = [
   {
@@ -47,7 +45,7 @@ const projectsData = [
       'Dark-first design system',
     ],
     images: [updiveSiem1, updiveSiem2, updiveSiem3],
-    figmaUrl: UPDIVE_SIEM_FIGMA,
+    behanceUrl: BEHANCE_URL,
   },
   {
     id: 'faol',
@@ -68,7 +66,7 @@ const projectsData = [
       'Faol Market & Faol Yo\'lda modullari',
     ],
     images: [faolImage1, faolImage2, faolImage3, faolImage4, faolImage5],
-    figmaUrl: FAOL_FIGMA,
+    behanceUrl: BEHANCE_URL,
     isFeatured: true,
   },
   {
@@ -89,7 +87,7 @@ const projectsData = [
       'Dark-mode enterprise design',
     ],
     images: [updiveEdr1, updiveEdr2, updiveEdr3],
-    figmaUrl: UPDIVE_EDR_FIGMA,
+    behanceUrl: BEHANCE_URL,
   },
   {
     id: 4,
@@ -109,7 +107,7 @@ const projectsData = [
       'Tizim samaradorligini oshirish',
     ],
     images: [],
-    figmaUrl: null,
+    behanceUrl: null,
   },
   {
     id: 5,
@@ -129,7 +127,6 @@ const projectsData = [
       'Campaign design',
     ],
     images: [ahmadTea1, ahmadTea2],
-    figmaUrl: null,
     behanceUrl: 'https://www.behance.net/muroddadaboev',
     isFeatured: true,
   },
@@ -151,7 +148,7 @@ const projectsData = [
       'Online trade module',
     ],
     images: [],
-    figmaUrl: null,
+    behanceUrl: null,
   },
   {
     id: 7,
@@ -249,8 +246,8 @@ const ImageGallery = ({ images, color }) => {
 /* ───── PROJECT MODAL ───── */
 const ProjectModal = ({ project, onClose, t }) => {
   if (!project) return null;
-  const hasFigma = !!project.figmaUrl;
   const hasBehance = !!project.behanceUrl;
+
   const hasImages = project.images && project.images.length > 0;
 
   return (
@@ -280,25 +277,6 @@ const ProjectModal = ({ project, onClose, t }) => {
             <div className="pm-gallery-col">
               <ImageGallery images={project.images} color={project.color} />
 
-              {hasFigma && (
-                <a
-                  href={project.figmaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="pm-figma-btn"
-                  style={{ background: project.color }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 24c2.2 0 4-1.8 4-4v-4H8c-2.2 0-4 1.8-4 4s1.8 4 4 4z"/>
-                    <path d="M4 12c0-2.2 1.8-4 4-4h4v8H8c-2.2 0-4-1.8-4-4z"/>
-                    <path d="M4 4c0-2.2 1.8-4 4-4h4v8H8C5.8 8 4 6.2 4 4z"/>
-                    <path d="M12 0h4c2.2 0 4 1.8 4 4s-1.8 4-4 4h-4V0z"/>
-                    <path d="M20 12c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4 4 1.8 4 4z"/>
-                  </svg>
-                  {t.nav?.work === 'Work' ? 'View on Figma' : t.nav?.work === 'Работы' ? 'Смотреть в Figma' : "Figma'da ko'rish"}
-                  <ExternalLink size={14} />
-                </a>
-              )}
               {hasBehance && (
                 <a
                   href={project.behanceUrl}
@@ -307,10 +285,12 @@ const ProjectModal = ({ project, onClose, t }) => {
                   className="pm-figma-btn"
                   style={{ background: '#1769ff' }}
                 >
+                  <ExternalLink size={18} />
                   {t.nav?.work === 'Work' ? 'View on Behance' : t.nav?.work === 'Работы' ? 'Смотреть в Behance' : "Behance'da ko'rish"}
                   <ExternalLink size={14} />
                 </a>
               )}
+
             </div>
           )}
 
@@ -356,26 +336,7 @@ const ProjectModal = ({ project, onClose, t }) => {
               ))}
             </div>
 
-            {/* Figma button for narrow mode (no images) */}
-            {hasFigma && !hasImages && (
-              <a
-                href={project.figmaUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pm-figma-btn"
-                style={{ background: project.color }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 24c2.2 0 4-1.8 4-4v-4H8c-2.2 0-4 1.8-4 4s1.8 4 4 4z"/>
-                  <path d="M4 12c0-2.2 1.8-4 4-4h4v8H8c-2.2 0-4-1.8-4-4z"/>
-                  <path d="M4 4c0-2.2 1.8-4 4-4h4v8H8C5.8 8 4 6.2 4 4z"/>
-                  <path d="M12 0h4c2.2 0 4 1.8 4 4s-1.8 4-4 4h-4V0z"/>
-                  <path d="M20 12c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4 4 1.8 4 4z"/>
-                </svg>
-                {t.nav?.work === 'Work' ? 'View on Figma' : t.nav?.work === 'Работы' ? 'Смотреть в Figma' : "Figma'da ko'rish"}
-                <ExternalLink size={14} />
-              </a>
-            )}
+            {/* Behance button for narrow mode (no images) */}
             {hasBehance && !hasImages && (
               <a
                 href={project.behanceUrl}
@@ -384,6 +345,7 @@ const ProjectModal = ({ project, onClose, t }) => {
                 className="pm-figma-btn"
                 style={{ background: '#1769ff' }}
               >
+                <ExternalLink size={18} />
                 {t.nav?.work === 'Work' ? 'View on Behance' : t.nav?.work === 'Работы' ? 'Смотреть в Behance' : "Behance'da ko'rish"}
                 <ExternalLink size={14} />
               </a>
@@ -465,24 +427,13 @@ const Projects = () => {
               <div className="pc-preview-img">
                 <img src={project.images[0]} alt={project.title} />
                 <div className="pc-preview-overlay" style={{ background: `linear-gradient(to bottom, transparent 30%, ${project.color}22 100%)` }} />
-                {project.figmaUrl && (
-                  <div className="pc-figma-badge">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 24c2.2 0 4-1.8 4-4v-4H8c-2.2 0-4 1.8-4 4s1.8 4 4 4z"/>
-                      <path d="M4 12c0-2.2 1.8-4 4-4h4v8H8c-2.2 0-4-1.8-4-4z"/>
-                      <path d="M4 4c0-2.2 1.8-4 4-4h4v8H8C5.8 8 4 6.2 4 4z"/>
-                      <path d="M12 0h4c2.2 0 4 1.8 4 4s-1.8 4-4 4h-4V0z"/>
-                      <path d="M20 12c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4 4 1.8 4 4z"/>
-                    </svg>
-                    Figma
-                  </div>
-                )}
                 {project.behanceUrl && (
                   <div className="pc-figma-badge" style={{ background: '#1769ff', color: '#fff', borderColor: '#1769ff' }}>
                     <ExternalLink size={12} />
                     Behance
                   </div>
                 )}
+
               </div>
             )}
 
@@ -516,7 +467,7 @@ const Projects = () => {
             <div className="pc-footer">
               <span className="pc-type">{project.type}</span>
               <span className="pc-open">
-                {project.figmaUrl ? 'Figma' : project.behanceUrl ? 'Behance' : t.nav?.work === 'Work' ? 'Details' : t.nav?.work === 'Работы' ? 'Подробно' : 'Batafsil'} <ArrowUpRight size={16} />
+                {project.behanceUrl ? 'Behance' : t.nav?.work === 'Work' ? 'Details' : t.nav?.work === 'Работы' ? 'Подробно' : 'Batafsil'} <ArrowUpRight size={16} />
               </span>
             </div>
           </motion.div>
