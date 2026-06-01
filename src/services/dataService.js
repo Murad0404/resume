@@ -162,6 +162,9 @@ const loadData = () => {
     if (stored) {
       const parsed = JSON.parse(stored);
       // Data migration to ensure new structures exist
+      if (!parsed.courses) parsed.courses = defaultData.courses;
+      if (!parsed.prompts) parsed.prompts = defaultData.prompts;
+      if (!parsed.stats) parsed.stats = defaultData.stats;
       if (!parsed.stats.dailyVisits) parsed.stats.dailyVisits = {};
       if (!parsed.stats.courseSales) parsed.stats.courseSales = {};
       if (!parsed.messages) parsed.messages = defaultData.messages;

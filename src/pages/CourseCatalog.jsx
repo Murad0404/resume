@@ -139,7 +139,7 @@ const CourseCatalog = () => {
             </div>
 
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1 }}>
-              {mod.features.map((feat, idx) => (
+              {(mod.features || []).map((feat, idx) => (
                 <li key={idx} style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', color: 'var(--text-main)', fontSize: '0.95rem' }}>
                   <CheckCircle size={18} style={{ color: i === 0 ? '#5a6bfa' : '#22c55e', flexShrink: 0 }} />
                   {feat}

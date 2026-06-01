@@ -248,7 +248,7 @@ const PromptMarketplace = () => {
               </div>
               
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 3rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {plan.features.map((f, i) => (
+                {(plan.features || []).map((f, i) => (
                   <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '1rem', fontWeight: 500 }}>
                     <div style={{ width: 20, height: 20, borderRadius: '50%', background: `${plan.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <CheckCircle size={14} style={{ color: plan.color }} />
