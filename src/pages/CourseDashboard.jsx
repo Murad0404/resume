@@ -239,7 +239,21 @@ const CourseDashboard = () => {
                 </p>
               </div>
             </>
-          ) : null}
+          ) : (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 2rem', textAlign: 'center', color: 'var(--text-muted)', gap: '1.5rem' }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(90, 107, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', border: '1px solid rgba(90, 107, 250, 0.2)' }}>
+                <PlayCircle size={32} />
+              </div>
+              <div>
+                <h3 style={{ color: 'var(--text-main)', marginBottom: '0.5rem', fontWeight: 800 }}>
+                  {lang === 'uz' ? "Darslar mavjud emas" : lang === 'ru' ? "Уроки отсутствуют" : "No Videos Available"}
+                </h3>
+                <p style={{ maxWidth: '400px', margin: '0 auto', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                  {lang === 'uz' ? "Ushbu modulga hali darslar qo'shilmagan. Ular tez orada admin tomonidan yuklanadi!" : lang === 'ru' ? "В этот модуль еще не добавлены уроки. Скоро они будут загружены!" : "No videos have been added to this module yet. They will be uploaded soon!"}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Sidebar: Chat */}
