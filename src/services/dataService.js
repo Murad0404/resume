@@ -199,17 +199,87 @@ const saveData = (data) => {
 
 export const dataService = {
   // COURSES
-  getCourses: () => {
+  getCourses: async () => {
+    try {
+      if (_supabase) {
+        const { data, error } = await _supabase.from('courses').select('*').order('created_at', { ascending: true });
+        if (!error && data) {
+          return data.map(c => ({
+            id: c.id,
+            title: c.title,
+            duration: c.duration,
+            price: c.price,
+            discountPrice: c.discount_price || '',
+            description: c.description,
+            features: Array.isArray(c.features) ? c.features : [],
+            videoCount: c.video_count || 0,
+            videos: Array.isArray(c.videos) ? c.videos : []
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase getCourses error, falling back to localStorage:", e);
+    }
     return loadData().courses;
   },
-  addCourse: (course) => {
-    const data = loadData();
+  
+  addCourse: async (course) => {
     const newCourse = { ...course, id: `course-${Date.now()}` };
+    try {
+      if (_supabase) {
+        const { error } = await _supabase.from('courses').insert([{
+          id: newCourse.id,
+          title: newCourse.title,
+          duration: newCourse.duration,
+          price: newCourse.price,
+          discount_price: newCourse.discountPrice || null,
+          description: newCourse.description,
+          features: newCourse.features,
+          video_count: newCourse.videoCount || 0,
+          videos: newCourse.videos || []
+        }]);
+        if (!error) {
+          const data = loadData();
+          data.courses.push(newCourse);
+          saveData(data);
+          return newCourse;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase addCourse error:", e);
+    }
+    const data = loadData();
     data.courses.push(newCourse);
     saveData(data);
     return newCourse;
   },
-  updateCourse: (id, updatedCourse) => {
+  
+  updateCourse: async (id, updatedCourse) => {
+    try {
+      if (_supabase) {
+        const { error } = await _supabase.from('courses').update({
+          title: updatedCourse.title,
+          duration: updatedCourse.duration,
+          price: updatedCourse.price,
+          discount_price: updatedCourse.discountPrice || null,
+          description: updatedCourse.description,
+          features: updatedCourse.features,
+          video_count: updatedCourse.videoCount || 0,
+          videos: updatedCourse.videos || []
+        }).eq('id', id);
+        if (!error) {
+          const data = loadData();
+          const index = data.courses.findIndex(c => c.id === id);
+          if (index !== -1) {
+            data.courses[index] = { ...data.courses[index], ...updatedCourse };
+            saveData(data);
+          }
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase updateCourse error:", e);
+    }
     const data = loadData();
     const index = data.courses.findIndex(c => c.id === id);
     if (index !== -1) {
@@ -217,24 +287,99 @@ export const dataService = {
       saveData(data);
     }
   },
-  deleteCourse: (id) => {
+  
+  deleteCourse: async (id) => {
+    try {
+      if (_supabase) {
+        const { error } = await _supabase.from('courses').delete().eq('id', id);
+        if (!error) {
+          const data = loadData();
+          data.courses = data.courses.filter(c => c.id !== id);
+          saveData(data);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase deleteCourse error:", e);
+    }
     const data = loadData();
     data.courses = data.courses.filter(c => c.id !== id);
     saveData(data);
   },
 
   // PROMPTS
-  getPrompts: () => {
+  getPrompts: async () => {
+    try {
+      if (_supabase) {
+        const { data, error } = await _supabase.from('prompts').select('*').order('created_at', { ascending: true });
+        if (!error && data) {
+          return data.map(p => ({
+            id: p.id,
+            category: p.category,
+            title: p.title,
+            prompt: p.prompt,
+            image: p.image,
+            isFree: p.is_free
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase getPrompts error, falling back to localStorage:", e);
+    }
     return loadData().prompts;
   },
-  addPrompt: (prompt) => {
-    const data = loadData();
+  
+  addPrompt: async (prompt) => {
     const newPrompt = { ...prompt, isFree: prompt.isFree || false, id: `prompt-${Date.now()}` };
+    try {
+      if (_supabase) {
+        const { error } = await _supabase.from('prompts').insert([{
+          id: newPrompt.id,
+          category: newPrompt.category,
+          title: newPrompt.title,
+          prompt: newPrompt.prompt,
+          image: newPrompt.image || null,
+          is_free: newPrompt.isFree
+        }]);
+        if (!error) {
+          const data = loadData();
+          data.prompts.push(newPrompt);
+          saveData(data);
+          return newPrompt;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase addPrompt error:", e);
+    }
+    const data = loadData();
     data.prompts.push(newPrompt);
     saveData(data);
     return newPrompt;
   },
-  updatePrompt: (id, updatedPrompt) => {
+  
+  updatePrompt: async (id, updatedPrompt) => {
+    try {
+      if (_supabase) {
+        const { error } = await _supabase.from('prompts').update({
+          category: updatedPrompt.category,
+          title: updatedPrompt.title,
+          prompt: updatedPrompt.prompt,
+          image: updatedPrompt.image || null,
+          is_free: updatedPrompt.isFree
+        }).eq('id', id);
+        if (!error) {
+          const data = loadData();
+          const index = data.prompts.findIndex(p => p.id === id);
+          if (index !== -1) {
+            data.prompts[index] = { ...data.prompts[index], ...updatedPrompt };
+            saveData(data);
+          }
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase updatePrompt error:", e);
+    }
     const data = loadData();
     const index = data.prompts.findIndex(p => p.id === id);
     if (index !== -1) {
@@ -242,7 +387,21 @@ export const dataService = {
       saveData(data);
     }
   },
-  deletePrompt: (id) => {
+  
+  deletePrompt: async (id) => {
+    try {
+      if (_supabase) {
+        const { error } = await _supabase.from('prompts').delete().eq('id', id);
+        if (!error) {
+          const data = loadData();
+          data.prompts = data.prompts.filter(p => p.id !== id);
+          saveData(data);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase deletePrompt error:", e);
+    }
     const data = loadData();
     data.prompts = data.prompts.filter(p => p.id !== id);
     saveData(data);
@@ -252,12 +411,28 @@ export const dataService = {
   getStats: async () => {
     const data = loadData();
     let realVisitors = data.stats.visitors;
+    let todayVisits = 0;
     
-    // Fallback: If Supabase works, we might try to fetch real stats, but localStorage is reliable for now.
-    const today = new Date().toISOString().split('T')[0];
-    const todayVisits = data.stats.dailyVisits[today] || 0;
+    try {
+      if (_supabase) {
+        const { count: totalCount, error: errTotal } = await _supabase.from('visits').select('*', { count: 'exact', head: true });
+        if (!errTotal && totalCount !== null) {
+          realVisitors = totalCount;
+        }
 
-    // Get registered users from localStorage
+        const todayStart = new Date();
+        todayStart.setHours(0,0,0,0);
+        const { count: tCount, error: errToday } = await _supabase.from('visits').select('*', { count: 'exact', head: true }).gte('created_at', todayStart.toISOString());
+        if (!errToday && tCount !== null) {
+          todayVisits = tCount;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase getStats error, falling back to localStorage stats:", e);
+      const today = new Date().toISOString().split('T')[0];
+      todayVisits = data.stats.dailyVisits[today] || 0;
+    }
+
     const usersStr = localStorage.getItem('registered_users');
     const users = usersStr ? JSON.parse(usersStr) : {};
     const registeredUsersCount = Object.keys(users).length;
@@ -272,19 +447,26 @@ export const dataService = {
     };
   },
   
-  incrementVisit: () => {
+  incrementVisit: async () => {
     const data = loadData();
-    // Check session to prevent multiple increments on reload in same session
     if (!sessionStorage.getItem('visited')) {
       const today = new Date().toISOString().split('T')[0];
       data.stats.visitors += 1;
       data.stats.dailyVisits[today] = (data.stats.dailyVisits[today] || 0) + 1;
       saveData(data);
       sessionStorage.setItem('visited', 'true');
+
+      try {
+        if (_supabase) {
+          await _supabase.from('visits').insert([{}]);
+        }
+      } catch (e) {
+        console.warn("Supabase incrementVisit sync failed:", e);
+      }
     }
   },
   
-  registerSale: (courseId) => {
+  registerSale: async (courseId) => {
     const data = loadData();
     data.stats.sales += 1;
     if (courseId) {
@@ -294,10 +476,55 @@ export const dataService = {
   },
 
   // PRICING PLANS
-  getPricingPlans: () => {
+  getPricingPlans: async () => {
+    try {
+      if (_supabase) {
+        const { data, error } = await _supabase.from('pricing_plans').select('*').order('created_at', { ascending: true });
+        if (!error && data && data.length > 0) {
+          return data.map(p => ({
+            id: p.id,
+            title: p.title,
+            price: p.price,
+            discountPrice: p.discount_price || '',
+            duration: p.duration,
+            features: Array.isArray(p.features) ? p.features : [],
+            color: p.color,
+            featured: p.featured
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase getPricingPlans error, falling back:", e);
+    }
     return loadData().pricingPlans;
   },
-  updatePricingPlan: (id, updatedPlan) => {
+  
+  updatePricingPlan: async (id, updatedPlan) => {
+    try {
+      if (_supabase) {
+        const updateObj = {};
+        if (updatedPlan.title !== undefined) updateObj.title = updatedPlan.title;
+        if (updatedPlan.price !== undefined) updateObj.price = updatedPlan.price;
+        if (updatedPlan.discountPrice !== undefined) updateObj.discount_price = updatedPlan.discountPrice;
+        if (updatedPlan.duration !== undefined) updateObj.duration = updatedPlan.duration;
+        if (updatedPlan.features !== undefined) updateObj.features = updatedPlan.features;
+        if (updatedPlan.color !== undefined) updateObj.color = updatedPlan.color;
+        if (updatedPlan.featured !== undefined) updateObj.featured = updatedPlan.featured;
+
+        const { error } = await _supabase.from('pricing_plans').update(updateObj).eq('id', id);
+        if (!error) {
+          const data = loadData();
+          const index = data.pricingPlans.findIndex(p => p.id === id);
+          if (index !== -1) {
+            data.pricingPlans[index] = { ...data.pricingPlans[index], ...updatedPlan };
+            saveData(data);
+          }
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase updatePricingPlan error:", e);
+    }
     const data = loadData();
     const index = data.pricingPlans.findIndex(p => p.id === id);
     if (index !== -1) {
@@ -306,26 +533,42 @@ export const dataService = {
     }
   },
 
-  // MESSAGES (Chat) — per-user threads
-  getMessages: () => {
+  // MESSAGES (Chat) - per-user threads
+  getMessages: async () => {
+    try {
+      if (_supabase) {
+        const { data, error } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: true });
+        if (!error && data) {
+          return data.map(m => ({
+            id: m.id,
+            text: m.text,
+            isAdmin: m.is_admin,
+            userId: m.user_id,
+            targetUserId: m.target_user_id,
+            userName: m.user_name,
+            time: m.time
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase getMessages error, falling back:", e);
+    }
     return loadData().messages;
   },
-  getMessagesByUser: (userId) => {
-    const all = loadData().messages;
+  
+  getMessagesByUser: async (userId) => {
+    const all = await dataService.getMessages();
     return all.filter(m => 
-      // System message to all
       (m.isAdmin && m.userId === 'system') || 
-      // User's own messages
       m.userId === userId ||
-      // Admin's direct reply to the user
       (m.isAdmin && m.targetUserId === userId)
     );
   },
-  getAllUserThreads: () => {
-    const all = loadData().messages;
+  
+  getAllUserThreads: async () => {
+    const all = await dataService.getMessages();
     const threads = {};
     
-    // First pass: create thread objects for all users who have sent a message
     all.forEach(m => {
       if (!m.isAdmin && m.userId && m.userId !== 'system') {
         if (!threads[m.userId]) {
@@ -334,7 +577,6 @@ export const dataService = {
       }
     });
 
-    // Second pass: add messages to their respective threads
     all.forEach(m => {
       if (!m.isAdmin && threads[m.userId]) {
         threads[m.userId].messages.push(m);
@@ -345,20 +587,43 @@ export const dataService = {
       }
     });
 
-    // Sort by lastTime descending if needed (optional)
     return Object.values(threads).sort((a, b) => new Date('1970/01/01 ' + b.lastTime) - new Date('1970/01/01 ' + a.lastTime));
   },
-  addMessage: (text, isAdmin = false, userId = 'anonymous', userName = '') => {
-    const data = loadData();
+  
+  addMessage: async (text, isAdmin = false, userId = 'anonymous', userName = '') => {
     const newMsg = {
       id: Date.now().toString(),
       text,
       isAdmin,
       userId: isAdmin ? 'admin' : userId,
-      targetUserId: isAdmin ? userId : null, // Store who the admin is replying to
+      targetUserId: isAdmin ? userId : null,
       userName: isAdmin ? 'Admin' : (userName || userId),
       time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
     };
+
+    try {
+      if (_supabase) {
+        const { error } = await _supabase.from('chat_messages').insert([{
+          id: newMsg.id,
+          text: newMsg.text,
+          is_admin: newMsg.isAdmin,
+          user_id: newMsg.userId,
+          target_user_id: newMsg.targetUserId,
+          user_name: newMsg.userName,
+          time: newMsg.time
+        }]);
+        if (!error) {
+          const data = loadData();
+          data.messages.push(newMsg);
+          saveData(data);
+          return newMsg;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase addMessage error:", e);
+    }
+
+    const data = loadData();
     data.messages.push(newMsg);
     saveData(data);
     return newMsg;

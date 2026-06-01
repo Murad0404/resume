@@ -25,18 +25,21 @@ const CourseDashboard = () => {
       return;
     }
     
-    const courses = dataService.getCourses() || [];
-    setAllModules(courses);
+    const fetchCourses = async () => {
+      const courses = await dataService.getCourses() || [];
+      setAllModules(courses);
 
-    const purchased = courses.filter(c => localStorage.getItem(`purchased_${c.id}`) === 'true');
-    setPurchasedModules(purchased);
-    
-    if (purchased.length > 0) {
-      setActiveModuleId(purchased[0].id);
-      if (purchased[0].videos && purchased[0].videos.length > 0) {
-        setActiveVideo(purchased[0].videos[0]);
+      const purchased = courses.filter(c => localStorage.getItem(`purchased_${c.id}`) === 'true');
+      setPurchasedModules(purchased);
+      
+      if (purchased.length > 0) {
+        setActiveModuleId(purchased[0].id);
+        if (purchased[0].videos && purchased[0].videos.length > 0) {
+          setActiveVideo(purchased[0].videos[0]);
+        }
       }
-    }
+    };
+    fetchCourses();
 
     if (session) {
       setCompletedVids(JSON.parse(localStorage.getItem(`completed_vids_${session.contact}`) || '[]'));

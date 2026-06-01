@@ -15,9 +15,16 @@ const CourseCatalog = () => {
   const [purchaseModal, setPurchaseModal] = useState(null);
   const [otpModal, setOtpModal] = useState(false);
   const [pendingModule, setPendingModule] = useState(null);
-  const [modules, setModules] = useState(() => dataService.getCourses());
-
+  const [modules, setModules] = useState([]);
   const [session, setSession] = useState(() => otpService.getSession());
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const courses = await dataService.getCourses();
+      setModules(courses || []);
+    };
+    fetchCourses();
+  }, []);
 
   const handleEnroll = (mod) => {
     if (!session) {

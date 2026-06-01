@@ -42,7 +42,11 @@ const PromptDashboard = () => {
       navigate('/prompts');
       return;
     }
-    setPrompts(dataService.getPrompts() || []);
+    const fetchPrompts = async () => {
+      const data = await dataService.getPrompts();
+      setPrompts(data || []);
+    };
+    fetchPrompts();
   }, [navigate, session]);
 
   const categories = ['Barchasi', ...new Set(prompts.map(p => p.category))];
@@ -194,7 +198,7 @@ Generate the result for the user's input. You MUST return a JSON object with EXA
     }
   };
 
-  const handleSaveGeneratedPrompt = () => {
+  const handleSaveGeneratedPrompt = async () => {
     if (!generatedResult) return;
     setIsSaving(true);
     
@@ -206,8 +210,9 @@ Generate the result for the user's input. You MUST return a JSON object with EXA
       isFree: false
     };
 
-    dataService.addPrompt(newPromptObj);
-    setPrompts(dataService.getPrompts());
+    await dataService.addPrompt(newPromptObj);
+    const data = await dataService.getPrompts();
+    setPrompts(data || []);
     
     setIsSaving(false);
     alert(lang === 'uz' ? "Promt muvaffaqiyatli kutubxonangizga saqlandi! Uni 'Promtlar To'plami' bo'limida ko'rishingiz mumkin." : "Промпт успешно сохранен в вашу библиотеку! Вы можете найти его в разделе 'Коллекция промптов'.");
@@ -303,7 +308,7 @@ Return ONLY JSON:
     setSearchMode('idle');
   };
 
-  const handleSaveSuggestedPrompt = (suggested) => {
+  const handleSaveSuggestedPrompt = async (suggested) => {
     const newPromptObj = {
       category: suggested.category,
       title: suggested.title,
@@ -312,8 +317,9 @@ Return ONLY JSON:
       isFree: false
     };
 
-    dataService.addPrompt(newPromptObj);
-    setPrompts(dataService.getPrompts());
+    await dataService.addPrompt(newPromptObj);
+    const data = await dataService.getPrompts();
+    setPrompts(data || []);
     
     // Remove from recommended list since it's already saved
     setAiSuggestedPrompts(prev => prev.filter(p => p.id !== suggested.id));

@@ -48,13 +48,13 @@ const AdminDashboardInner = () => {
   const loadDashboardData = async () => {
     const s = await dataService.getStats();
     setStats(s || { visitors: 0, todayVisits: 0, sales: 0, courseSales: {}, dailyVisits: {} });
-    setPrompts(dataService.getPrompts() || []);
-    setCourses(dataService.getCourses() || []);
-    setPricingPlans(dataService.getPricingPlans() || []);
+    setPrompts(await dataService.getPrompts() || []);
+    setCourses(await dataService.getCourses() || []);
+    setPricingPlans(await dataService.getPricingPlans() || []);
     
-    const allMsgs = dataService.getMessages() || [];
+    const allMsgs = await dataService.getMessages() || [];
     setMessages(allMsgs);
-    setUserThreads(dataService.getAllUserThreads() || []);
+    setUserThreads(await dataService.getAllUserThreads() || []);
 
     try {
       if (supabase) {
@@ -150,16 +150,16 @@ const AdminDashboardInner = () => {
     navigate('/');
   };
 
-  const handleAddPrompt = (e) => {
+  const handleAddPrompt = async (e) => {
     e.preventDefault();
-    dataService.addPrompt(newPrompt);
+    await dataService.addPrompt(newPrompt);
     setNewPrompt({ title: '', category: '', prompt: '', image: '', isFree: false });
     loadDashboardData();
   };
 
-  const handleUpdatePrompt = (e) => {
+  const handleUpdatePrompt = async (e) => {
     e.preventDefault();
-    dataService.updatePrompt(editingPrompt.id, editingPrompt);
+    await dataService.updatePrompt(editingPrompt.id, editingPrompt);
     setEditingPrompt(null);
     loadDashboardData();
   };
@@ -179,29 +179,29 @@ const AdminDashboardInner = () => {
     }
   };
 
-  const handleDeletePrompt = (id) => {
-    dataService.deletePrompt(id);
+  const handleDeletePrompt = async (id) => {
+    await dataService.deletePrompt(id);
     loadDashboardData();
   };
 
-  const handleAddCourse = (e) => {
+  const handleAddCourse = async (e) => {
     e.preventDefault();
     const courseToAdd = {
       ...newCourse,
       features: newCourse.features.split('\n').filter(f => f.trim() !== '')
     };
-    dataService.addCourse(courseToAdd);
+    await dataService.addCourse(courseToAdd);
     setNewCourse({ title: '', duration: '', price: '', discountPrice: '', description: '', features: '', videoCount: 0 });
     loadDashboardData();
   };
 
-  const handleUpdateCourse = (e) => {
+  const handleUpdateCourse = async (e) => {
     e.preventDefault();
     const updated = {
       ...editingCourse,
       features: Array.isArray(editingCourse.features) ? editingCourse.features : editingCourse.features.split('\n').filter(f => f.trim() !== '')
     };
-    dataService.updateCourse(editingCourse.id, updated);
+    await dataService.updateCourse(editingCourse.id, updated);
     setEditingCourse(null);
     loadDashboardData();
   };
@@ -228,76 +228,114 @@ const AdminDashboardInner = () => {
     setEditingCourse({ ...editingCourse, videos });
   };
 
-  const handleDeleteCourse = (id) => {
+  const handleDeleteCourse = async (id) => {
     if (confirm('Aniq o\'chirasizmi?')) {
-      dataService.deleteCourse(id);
+      await dataService.deleteCourse(id);
       loadDashboardData();
     }
   };
 
-  const handleReplyMessage = (e) => {
+  const handleReplyMessage = async (e) => {
     e.preventDefault();
     if (!replyInput.trim() || !selectedUserId) return;
-    dataService.addMessage(replyInput, true, selectedUserId, 'Admin');
+    await dataService.addMessage(replyInput, true, selectedUserId, 'Admin');
     setReplyInput('');
     loadDashboardData();
   };
 
-  const handleApprovePayment = async (id) => {
-    const stored = localStorage.getItem('payment_requests');
-    const list = stored ? JSON.parse(stored) : [];
-    const index = list.findIndex(p => p.id === id);
-    if (index !== -1) {
-      list[index].status = 'approved';
-      localStorage.setItem('payment_requests', JSON.stringify(list));
-      
-      const item = list[index];
-      localStorage.setItem(`purchased_${item.itemId}`, 'true');
-      localStorage.setItem(`purchased_${item.itemId}_at`, Date.now().toString());
-      localStorage.setItem(`payment_status_${item.itemId}`, 'approved');
-      
-      if (item.itemType === 'prompt') {
-        localStorage.setItem('hasPurchasedPrompts', 'true');
-      }
-      
-      dataService.registerSale(item.itemType === 'course' ? item.itemId : null);
+  const BOT_TOKEN = '8697069079:AAHKkQ6FDAQ4q5hSx6UKoCUmoQjvPZl5d74';
+  const TELEGRAM_CHAT_ID = '635476813';
 
-      try {
-        if (supabase) {
-          await supabase.from('payment_requests').update({ status: 'approved' }).eq('id', id);
-        }
-      } catch (dbErr) {
-        console.warn("Could not sync approval to Supabase:", dbErr);
-      }
-
-      loadDashboardData();
+  const sendTelegramMessage = async (text) => {
+    try {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: 'HTML' })
+      });
+    } catch (e) {
+      console.warn('Telegram notify failed:', e);
     }
   };
 
-  const handleRejectPayment = async (id) => {
-    if (confirm("Ushbu to'lovni rad etishni xohlaysizmi?")) {
-      const stored = localStorage.getItem('payment_requests');
-      const list = stored ? JSON.parse(stored) : [];
-      const index = list.findIndex(p => p.id === id);
-      if (index !== -1) {
-        list[index].status = 'rejected';
-        localStorage.setItem('payment_requests', JSON.stringify(list));
-        
-        const item = list[index];
-        localStorage.removeItem(`purchased_${item.itemId}`);
-        localStorage.setItem(`payment_status_${item.itemId}`, 'rejected');
+  const handleApprovePayment = async (payId) => {
+    const stored = localStorage.getItem('payment_requests');
+    const list = stored ? JSON.parse(stored) : [];
+    const index = list.findIndex(p => p.id === payId);
+    if (index === -1) return;
 
-        try {
-          if (supabase) {
-            await supabase.from('payment_requests').update({ status: 'rejected' }).eq('id', id);
-          }
-        } catch (dbErr) {
-          console.warn("Could not sync rejection to Supabase:", dbErr);
-        }
-        
-        loadDashboardData();
-      }
+    list[index].status = 'approved';
+    localStorage.setItem('payment_requests', JSON.stringify(list));
+
+    const item = list[index];
+    localStorage.setItem(`purchased_${item.itemId}`, 'true');
+    localStorage.setItem(`purchased_${item.itemId}_at`, Date.now().toString());
+    localStorage.setItem(`payment_status_${item.itemId}`, 'approved');
+
+    if (item.itemType === 'prompt') {
+      localStorage.setItem('hasPurchasedPrompts', 'true');
     }
+
+    await dataService.registerSale(item.itemType === 'course' ? item.itemId : null);
+
+    // Notify admin via Telegram with approval details
+    await sendTelegramMessage(
+      `✅ <b>TO'LOV TASDIQLANDI</b>\n\n` +
+      `🆔 To'lov ID: <code>${payId}</code>\n` +
+      `👤 Foydalanuvchi: ${item.userName}\n` +
+      `📞 Aloqa: ${item.userId}\n` +
+      `📦 Mahsulot: ${item.itemTitle}\n` +
+      `💵 Narxi: ${item.itemPrice}\n\n` +
+      `👉 Foydalanuvchiga ushbu <b>TASDIQLASH KODI</b>ni yuboring:\n` +
+      `<code>${payId}</code>\n\n` +
+      `Foydalanuvchi ushbu kodni to'lov modalida kiritib kirish oladi.`
+    );
+
+    // Sync to Supabase silently
+    try {
+      if (supabase) {
+        await supabase.from('payment_requests').update({ status: 'approved' }).eq('id', payId);
+      }
+    } catch (dbErr) {
+      console.warn('Supabase sync failed (non-critical):', dbErr);
+    }
+
+    loadDashboardData();
+  };
+
+  const handleRejectPayment = async (payId) => {
+    if (!confirm("Ushbu to'lovni rad etishni xohlaysizmi?")) return;
+
+    const stored = localStorage.getItem('payment_requests');
+    const list = stored ? JSON.parse(stored) : [];
+    const index = list.findIndex(p => p.id === payId);
+    if (index === -1) return;
+
+    list[index].status = 'rejected';
+    localStorage.setItem('payment_requests', JSON.stringify(list));
+
+    const item = list[index];
+    localStorage.removeItem(`purchased_${item.itemId}`);
+    localStorage.setItem(`payment_status_${item.itemId}`, 'rejected');
+
+    // Notify admin via Telegram
+    await sendTelegramMessage(
+      `❌ <b>TO'LOV RAD ETILDI</b>\n\n` +
+      `🆔 To'lov ID: <code>${payId}</code>\n` +
+      `👤 Foydalanuvchi: ${item.userName}\n` +
+      `📞 Aloqa: ${item.userId}\n` +
+      `📦 Mahsulot: ${item.itemTitle}`
+    );
+
+    try {
+      if (supabase) {
+        await supabase.from('payment_requests').update({ status: 'rejected' }).eq('id', payId);
+      }
+    } catch (dbErr) {
+      console.warn('Supabase sync failed (non-critical):', dbErr);
+    }
+
+    loadDashboardData();
   };
 
   const tabStyle = (tab) => ({
@@ -598,11 +636,11 @@ const AdminDashboardInner = () => {
                       <input 
                         style={inputStyle} 
                         value={plan.title} 
-                        onChange={e => {
+                        onChange={async e => {
                           const updatedVal = e.target.value;
                           const updatedPlans = pricingPlans.map(p => p.id === plan.id ? { ...p, title: updatedVal } : p);
                           setPricingPlans(updatedPlans);
-                          dataService.updatePricingPlan(plan.id, { title: updatedVal });
+                          await dataService.updatePricingPlan(plan.id, { title: updatedVal });
                         }} 
                       />
                     </div>
@@ -613,11 +651,11 @@ const AdminDashboardInner = () => {
                         <input 
                           style={inputStyle} 
                           value={plan.price} 
-                          onChange={e => {
+                          onChange={async e => {
                             const updatedVal = e.target.value;
                             const updatedPlans = pricingPlans.map(p => p.id === plan.id ? { ...p, price: updatedVal } : p);
                             setPricingPlans(updatedPlans);
-                            dataService.updatePricingPlan(plan.id, { price: updatedVal });
+                            await dataService.updatePricingPlan(plan.id, { price: updatedVal });
                           }} 
                         />
                       </div>
@@ -627,11 +665,11 @@ const AdminDashboardInner = () => {
                           style={inputStyle} 
                           placeholder="Bo'sh qoldiring"
                           value={plan.discountPrice || ''} 
-                          onChange={e => {
+                          onChange={async e => {
                             const updatedVal = e.target.value;
                             const updatedPlans = pricingPlans.map(p => p.id === plan.id ? { ...p, discountPrice: updatedVal } : p);
                             setPricingPlans(updatedPlans);
-                            dataService.updatePricingPlan(plan.id, { discountPrice: updatedVal });
+                            await dataService.updatePricingPlan(plan.id, { discountPrice: updatedVal });
                           }} 
                         />
                       </div>
@@ -765,11 +803,22 @@ const AdminDashboardInner = () => {
 
         {activeTab === 'payments' && (
           <motion.div key="payments" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
               <h2 style={{ margin: 0 }}>Karta orqali To'lov So'rovlari</h2>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', background: 'var(--card-bg-hover)', padding: '0.5rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', fontWeight: 600 }}>
-                Kutilmoqda: {payments.filter(p => p.status === 'pending').length} ta
-              </span>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.9rem', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', padding: '0.5rem 1rem', borderRadius: '10px', border: '1px solid rgba(245,158,11,0.2)', fontWeight: 700 }}>
+                  ⏳ Kutilmoqda: {payments.filter(p => p.status === 'pending').length} ta
+                </span>
+                <button
+                  onClick={loadDashboardData}
+                  style={{ background: 'var(--card-bg-hover)', border: '1px solid var(--border-color)', color: 'var(--text-muted)', padding: '0.5rem 1rem', borderRadius: '10px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  🔄 Yangilash
+                </button>
+              </div>
+            </div>
+            <div style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '14px', padding: '1rem 1.25rem', marginBottom: '1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+              💡 <strong style={{color: 'var(--text-main)'}}>Qanday ishlaydi?</strong> Foydalanuvchi chek yuklaydi → Siz tasdiqlaysiz → Telegram botingizga <strong>tasdiqlash kodi</strong> keladi → Kodni foydalanuvchiga yuboring → Foydalanuvchi kodni kiritib kirish oladi.
             </div>
 
             <div style={{ overflowX: 'auto', background: 'var(--card-bg)', borderRadius: '20px', border: '1px solid var(--border-color)', padding: '1rem' }}>
@@ -792,17 +841,20 @@ const AdminDashboardInner = () => {
                     </tr>
                   ) : (
                     [...payments].reverse().map(pay => (
-                      <tr key={pay.id} style={{ borderBottom: '1px solid var(--border-color)', background: pay.status === 'pending' ? 'rgba(90, 107, 250, 0.02)' : 'transparent', fontSize: '0.9rem' }}>
+                      <tr key={pay.id} style={{ borderBottom: '1px solid var(--border-color)', background: pay.status === 'pending' ? 'rgba(245,158,11,0.04)' : 'transparent', fontSize: '0.9rem' }}>
                         <td style={{ padding: '1rem' }}>
                           <div style={{ fontWeight: 700, color: 'var(--text-main)' }}>{pay.userName}</div>
                           <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>{pay.userId}</div>
                         </td>
-                        <td style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-main)' }}>{pay.itemTitle}</td>
+                        <td style={{ padding: '1rem' }}>
+                          <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{pay.itemTitle}</div>
+                          <div style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: 'var(--text-muted)', marginTop: '0.2rem', letterSpacing: '0.5px' }}>ID: {pay.id}</div>
+                        </td>
                         <td style={{ padding: '1rem', color: 'var(--accent)', fontWeight: 800 }}>{pay.itemPrice}</td>
                         <td style={{ padding: '1rem' }}>
                           {pay.receiptImage ? (
-                            <a href={pay.receiptImage} download={`chek-${pay.id}.png`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: 'var(--accent)', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none' }}>
-                              <Image size={14} /> Chekni yuklash / ko'rish
+                            <a href={pay.receiptImage} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: 'var(--accent)', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none' }}>
+                              <Image size={14} /> Ko'rish
                             </a>
                           ) : (
                             <span style={{ color: 'var(--text-muted)' }}>Yuklanmagan</span>
@@ -810,39 +862,43 @@ const AdminDashboardInner = () => {
                         </td>
                         <td style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.82rem' }}>{pay.time}</td>
                         <td style={{ padding: '1rem' }}>
-                          <span style={{ 
-                            padding: '0.3rem 0.75rem', 
-                            borderRadius: '999px', 
-                            fontSize: '0.75rem', 
+                          <span style={{
+                            padding: '0.3rem 0.75rem',
+                            borderRadius: '999px',
+                            fontSize: '0.75rem',
                             fontWeight: 800,
                             background: pay.status === 'approved' ? 'rgba(34, 197, 94, 0.1)' : pay.status === 'rejected' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
                             color: pay.status === 'approved' ? '#22c55e' : pay.status === 'rejected' ? '#ef4444' : '#f59e0b'
                           }}>
-                            {pay.status === 'approved' ? 'Tasdiqlangan' : pay.status === 'rejected' ? 'Rad etilgan' : 'Kutilmoqda'}
+                            {pay.status === 'approved' ? '✅ Tasdiqlangan' : pay.status === 'rejected' ? '❌ Rad etilgan' : '⏳ Kutilmoqda'}
                           </span>
                         </td>
                         <td style={{ padding: '1rem', textAlign: 'center' }}>
                           {pay.status === 'pending' ? (
                             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-                              <button 
+                              <button
                                 onClick={() => handleApprovePayment(pay.id)}
-                                style={{ background: '#22c55e', border: 'none', color: 'white', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, transition: 'all 0.2s' }}
-                                onMouseOver={e => e.currentTarget.style.filter = 'brightness(1.1)'}
+                                style={{ background: '#22c55e', border: 'none', color: 'white', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                                onMouseOver={e => e.currentTarget.style.filter = 'brightness(1.15)'}
                                 onMouseOut={e => e.currentTarget.style.filter = 'none'}
                               >
-                                Tasdiqlash
+                                ✅ Tasdiqlash
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleRejectPayment(pay.id)}
-                                style={{ background: '#ef4444', border: 'none', color: 'white', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, transition: 'all 0.2s' }}
-                                onMouseOver={e => e.currentTarget.style.filter = 'brightness(1.1)'}
+                                style={{ background: '#ef4444', border: 'none', color: 'white', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                                onMouseOver={e => e.currentTarget.style.filter = 'brightness(1.15)'}
                                 onMouseOut={e => e.currentTarget.style.filter = 'none'}
                               >
-                                Rad etish
+                                ❌ Rad etish
                               </button>
                             </div>
+                          ) : pay.status === 'approved' ? (
+                            <div style={{ fontSize: '0.8rem', color: '#22c55e', fontWeight: 700 }}>
+                              Kod: <span style={{ fontFamily: 'monospace', letterSpacing: '1px' }}>{pay.id}</span>
+                            </div>
                           ) : (
-                            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Bajarildi</span>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Rad etildi</span>
                           )}
                         </td>
                       </tr>

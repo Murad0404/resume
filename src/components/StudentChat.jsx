@@ -13,9 +13,9 @@ const StudentChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadMessages = () => {
+  const loadMessages = async () => {
     if (session) {
-      const msgs = dataService.getMessagesByUser(session.contact) || [];
+      const msgs = await dataService.getMessagesByUser(session.contact) || [];
       setMessages(msgs);
     }
   };
@@ -36,7 +36,7 @@ const StudentChat = () => {
   //   scrollToBottom();
   // }, [messages]);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || !session) return;
 
@@ -44,7 +44,7 @@ const StudentChat = () => {
     setInput('');
 
     // Save locally
-    const newMsg = dataService.addMessage(textToSend, false, session.contact, session.name);
+    const newMsg = await dataService.addMessage(textToSend, false, session.contact, session.name);
     setMessages(prev => [...prev, newMsg]);
     setTimeout(scrollToBottom, 50);
   };

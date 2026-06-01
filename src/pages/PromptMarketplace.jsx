@@ -11,7 +11,8 @@ import PaymentModal from '../components/PaymentModal';
 const PromptMarketplace = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [prompts, setPrompts] = useState(() => dataService.getPrompts());
+  const [prompts, setPrompts] = useState([]);
+  const [pricingPlans, setPricingPlans] = useState([]);
   const [purchaseModal, setPurchaseModal] = useState(null);
   const [otpModal, setOtpModal] = useState(false);
   const [pendingPlan, setPendingPlan] = useState(null);
@@ -22,6 +23,21 @@ const PromptMarketplace = () => {
   });
 
   const [session, setSession] = useState(() => otpService.getSession());
+
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await dataService.getPrompts();
+      setPrompts(data || []);
+      
+      const plans = await dataService.getPricingPlans();
+      const mapped = (plans || []).map(plan => ({
+        ...plan,
+        icon: plan.id === 'lifetime' ? <InfinityIcon size={24} /> : <Clock size={24} />
+      }));
+      setPricingPlans(mapped);
+    };
+    loadData();
+  }, []);
 
   const handlePurchaseClick = (plan) => {
     const isPurchased = localStorage.getItem('hasPurchasedPrompts') === 'true' || localStorage.getItem(`purchased_${plan.id}`) === 'true';
@@ -64,10 +80,7 @@ const PromptMarketplace = () => {
     visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: "easeOut" } }
   };
 
-  const pricingPlans = dataService.getPricingPlans().map(plan => ({
-    ...plan,
-    icon: plan.id === 'lifetime' ? <InfinityIcon size={24} /> : <Clock size={24} />
-  }));
+
 
   const handleCopy = (text, id) => {
     navigator.clipboard.writeText(text);
