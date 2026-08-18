@@ -23,6 +23,7 @@ import updiveEdr3 from '../assets/updive/edr-3.png';
 // Ahmad Tea images
 import ahmadTea1 from '../assets/ahmadtea/ahmad-1.jpg';
 import ahmadTea2 from '../assets/ahmadtea/ahmad-2.jpg';
+import biorganicImg from '../assets/brands/biorganic.png';
 
 const BEHANCE_URL = 'https://www.behance.net/muroddadaboev';
 
@@ -187,8 +188,11 @@ const projectsData = [
       'Organik mahsulotlar katalogi',
       'Kompaniya brendingi',
     ],
-    images: [],
+    images: [biorganicImg],
     behanceUrl: 'https://www.biorganic.store/',
+    isFeatured: true,
+    bgColor: '#ffffff',
+    imgStyle: { objectFit: 'contain', padding: '10%' }
   },
 ];
 
@@ -444,8 +448,8 @@ const Projects = () => {
 
             {/* Featured image preview for Faol */}
             {project.isFeatured && project.images.length > 0 && (
-              <div className="pc-preview-img">
-                <img src={project.images[0]} alt={project.title} />
+              <div className="pc-preview-img" style={project.bgColor ? { background: project.bgColor } : {}}>
+                <img src={project.images[0]} alt={project.title} style={project.imgStyle || {}} />
                 <div className="pc-preview-overlay" style={{ background: `linear-gradient(to bottom, transparent 30%, ${project.color}22 100%)` }} />
                 {project.behanceUrl && (
                   <div className="pc-figma-badge" style={{ background: '#1769ff', color: '#fff', borderColor: '#1769ff' }}>

@@ -38,7 +38,7 @@ export const translations = {
         success: "Rahmat! Ma'lumotlar muvaffaqiyatli yuborildi. Murod tez orada siz bilan bog'lanadi."
       },
       responses: {
-        experience: "Murod 6 yildan ortiq tajribaga ega. Hozirda Biorganic (iyundan boshlab, dizayner va web dasturchi), DataGaze va UpDive kompaniyalarida UI/UX Designer sifatida ishlamoqda. Bungacha Datasite Technology kompaniyasida 4 yildan ortiq grafik dizayner bo'lib, chet el avtomobil kompaniyalari uchun professional mashina retushi va grafik ishlar bilan shug'ullangan. Shuningdek, KPI COM va MIO BEAUTY kompaniyalarida Java Backend Developer bo'lib ishlagan. Bu boy tajriba uni dizayn va texnologiyani mukammal birlashtiruvchi mutaxassisga aylantirgan.",
+        experience: "Murod 6 yildan ortiq tajribaga ega. Hozirda Biorganic (iyundan boshlab, grafik dizayner va dasturchi), DataGaze va UpDive kompaniyalarida UI/UX Designer sifatida ishlamoqda. Bungacha Datasite Technology kompaniyasida 4 yildan ortiq grafik dizayner bo'lib, chet el avtomobil kompaniyalari uchun professional mashina retushi va grafik ishlar bilan shug'ullangan. Shuningdek, KPI COM va MIO BEAUTY kompaniyalarida Java Backend Developer bo'lib ishlagan. Bu boy tajriba uni dizayn va texnologiyani mukammal birlashtiruvchi mutaxassisga aylantirgan.",
         skills: "Murodning ko'nikmalari keng qamrovli: Backend (Java, Spring Boot, REST API, Monolith arxitektura, Git, PostgreSQL, SQL), UI/UX Dizayn (Figma, zamonaviy va minimalistik interfeys dizayni, mobil va web ilovalar), QA (Manual testing, UI/CRM/ERP tizimlarini test qilish), shuningdek React Native orqali mobil dastur ishlab chiqish.",
         backend: "Murod asosan Java backend development bilan shug'ullanadi. Spring Boot orqali REST API lar ishlab chiqadi, ERP tizimlar bilan ishlash tajribasiga ega. Monolit arxitekturada ishlaydi — eski kodlar bilan ishlash, buglarni topish va optimizatsiya qilish tajribasi bor. Production muhitdagi real muammolarni hal qilgan.",
         design: "Murod hozirda DataGaze va UpDive kompaniyalarida UI/UX dizayner sifatida ishlaydi. Zamonaviy, minimalistik va foydalanuvchiga qulay interfeyslar yaratadi. Mobil va web ilovalar uchun dizayn qiladi. Foydalanuvchi tajribasini (UX) yaxshilashga alohida e'tibor qaratadi.",
@@ -121,7 +121,7 @@ export const translations = {
         success: "Спасибо! Данные успешно отправлены. Мурод скоро свяжется с вами."
       },
       responses: {
-        experience: "У Мурода более 6 лет опыта. Сейчас он работает UI/UX дизайнером и веб-разработчиком в Biorganic (с июня), DataGaze и UpDive. До этого он более 4 лет проработал графическим дизайнером в Datasite Technology, где занимался профессиональной ретушью автомобилей для зарубежных компаний и другими графическими работами. Также имеет опыт работы Java Backend разработчиком в KPI COM и MIO BEAUTY. Этот путь сделал его уникальным специалистом, объединяющим дизайн и код.",
+        experience: "У Мурода более 6 лет опыта. Сейчас он работает графическим дизайнером и разработчиком в Biorganic (с июня), а также UI/UX дизайнером в DataGaze и UpDive. До этого он более 4 лет проработал графическим дизайнером в Datasite Technology, где занимался профессиональной ретушью автомобилей для зарубежных компаний и другими графическими работами. Также имеет опыт работы Java Backend разработчиком в KPI COM и MIO BEAUTY. Этот путь сделал его уникальным специалистом, объединяющим дизайн и код.",
         skills: "Навыки Мурода охватывают широкий спектр: Backend (Java, Spring Boot, REST API, монолитная архитектура, Git, PostgreSQL, SQL), UI/UX Design (Figma, современные и минималистичные интерфейсы, мобильные и веб-приложения), QA (Manual testing, тестирование UI/CRM/ERP), а также разработка мобильных приложений на React Native.",
         backend: "Мурод специализируется на Java backend development. Разрабатывает REST API через Spring Boot, имеет опыт работы с ERP системами. Работает с монолитной архитектурой — умеет работать с legacy кодом, находить баги и оптимизировать. Решал реальные проблемы в production среде.",
         design: "Сейчас Мурод работает UI/UX дизайнером в DataGaze и UpDive. Создаёт современные, минималистичные и удобные интерфейсы. Проектирует для мобильных и веб-приложений. Особое внимание уделяет улучшению пользовательского опыта (UX).",
@@ -204,7 +204,7 @@ export const translations = {
         success: "Thank you! Information sent successfully. Murod will contact you shortly."
       },
       responses: {
-        experience: "Murod has 6+ years of total experience. He currently works as a UI/UX Designer and Web Developer at Biorganic (since June), DataGaze and UpDive. Previously, he spent over 4 years as a Graphic Designer at Datasite Technology, specializing in professional car retouching for overseas companies and commercial graphics. He also worked as a Java Backend Developer at KPI COM and MIO BEAUTY. His journey across graphic design, backend, and UX/UI makes him a versatile professional.",
+        experience: "Murod has 6+ years of total experience. He currently works as a Graphic Designer and Developer at Biorganic (since June), and as a UI/UX Designer at DataGaze and UpDive. Previously, he spent over 4 years as a Graphic Designer at Datasite Technology, specializing in professional car retouching for overseas companies and commercial graphics. He also worked as a Java Backend Developer at KPI COM and MIO BEAUTY. His journey across graphic design, backend, and UX/UI makes him a versatile professional.",
         skills: "Murod's skill set is broad: Backend (Java, Spring Boot, REST API, Monolith architecture, Git, PostgreSQL, SQL), UI/UX Design (Figma, modern minimalist interfaces, mobile & web apps), QA (Manual testing, UI/CRM/ERP systems), and mobile development with React Native.",
         backend: "Murod specializes in Java backend development. He builds REST APIs with Spring Boot and has experience with enterprise ERP systems. He works with monolith architecture—proficient at working with legacy code, identifying bugs, and optimization. He has solved real production-level problems.",
         design: "Murod currently works as a UI/UX Designer at DataGaze and UpDive. He creates modern, minimalist, and user-friendly interfaces for both mobile and web applications, with a strong focus on improving user experience (UX).",
@@ -252,7 +252,7 @@ export const translations = {
 
 export const murodKnowledge = {
   experience: {
-    biorganic: "Designer and Web Developer at Biorganic (since June). Designed and built their e-commerce website.",
+    biorganic: "Graphic Designer and Developer at Biorganic (since June). Designed and built their e-commerce website.",
     datagaze: "UI/UX Designer at DataGaze. Designing interfaces for cybersecurity platforms (SIEM/DLP).",
     updive: "UI/UX Designer at UpDive. Creating modern, user-centered interfaces.",
     miobeauty: "Java Developer at MIO BEAUTY. Developed REST API backend using Java 21.",

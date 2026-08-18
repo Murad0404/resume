@@ -11,6 +11,7 @@ import updiveBrandImg from '../assets/brands/updive.png';
 import kpiImg from '../assets/brands/kpi.png';
 import datasiteImg from '../assets/brands/datasite.png';
 import ahmadTea1 from '../assets/ahmadtea/ahmad-new.jpg';
+import biorganicImg from '../assets/brands/biorganic.png';
 const Home = () => {
   const { t } = useLanguage();
   const { openContactModal } = useModal();
@@ -41,7 +42,7 @@ const Home = () => {
     { id: 4,  tag: 'JAVA DEVELOPER', title: 'KPI.com',              desc: 'ERP Module Development', link: '/projects', img: kpiImg },
     { id: 5,  tag: 'GRAPHIC DESIGN', title: 'Ahmad Tea',            desc: 'Social Media Visuals',   link: '/projects', img: ahmadTea1 },
     { id: 7,  tag: 'GRAPHIC DESIGN', title: 'Datasite Technology',  desc: 'Graphic Design',         link: '/projects', img: datasiteImg },
-    { id: 8,  tag: 'WEB & DESIGN',   title: 'Biorganic',            desc: 'E-Commerce Website',     link: '/projects', img: null },
+    { id: 8,  tag: 'WEB & DESIGN',   title: 'Biorganic',            desc: 'E-Commerce Website',     link: '/projects', img: biorganicImg, bgColor: '#ffffff', imgStyle: { objectFit: 'contain', padding: '10%' } },
   ];
 
   return (
@@ -122,9 +123,9 @@ const Home = () => {
         {/* PROJECTS TO GRID */}
         {homeProjects.map(p => (
           <motion.div key={p.id} className={`bento-box bento-project project-${p.id}`}>
-            <div className="project-img-wrapper" style={!p.img ? { background: 'var(--card-bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center' } : {}}>
+            <div className="project-img-wrapper" style={p.bgColor ? { background: p.bgColor } : (!p.img ? { background: 'var(--card-bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center' } : {})}>
               {p.img ? (
-                <img src={p.img} alt={p.title} />
+                <img src={p.img} alt={p.title} style={p.imgStyle || {}} />
               ) : (
                 <div style={{ opacity: 0.3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <Layers size={48} />
