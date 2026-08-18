@@ -23,7 +23,7 @@ import updiveEdr3 from '../assets/updive/edr-3.png';
 // Ahmad Tea images
 import ahmadTea1 from '../assets/ahmadtea/ahmad-1.jpg';
 import ahmadTea2 from '../assets/ahmadtea/ahmad-2.jpg';
-import biorganicImg from '../assets/brands/biorganic.jpg';
+import biorganicImg from '../assets/brands/biorganic.png';
 
 const BEHANCE_URL = 'https://www.behance.net/muroddadaboev';
 
@@ -48,8 +48,8 @@ const projectsData = [
     images: [biorganicImg],
     behanceUrl: 'https://www.biorganic.store/',
     isFeatured: true,
-    bgColor: '#ffffff',
-    imgStyle: { objectFit: 'contain', padding: '5%', transform: 'scale(1.15)' }
+    bgColor: '#55983b',
+    imgStyle: { objectFit: 'contain', padding: '15%', transform: 'scale(1.15)' }
   },
   {
     id: 1,
