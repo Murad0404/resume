@@ -49,7 +49,7 @@ const projectsData = [
     behanceUrl: 'https://www.biorganic.store/',
     isFeatured: true,
     bgColor: '#66a136',
-    imgStyle: { objectFit: 'contain', padding: '0%', transform: 'scale(1.25)' }
+    imgStyle: { objectFit: 'contain', padding: '10%', transform: 'scale(1.05)' }
   },
   {
     id: 1,
