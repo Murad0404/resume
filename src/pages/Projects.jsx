@@ -23,11 +23,34 @@ import updiveEdr3 from '../assets/updive/edr-3.png';
 // Ahmad Tea images
 import ahmadTea1 from '../assets/ahmadtea/ahmad-1.jpg';
 import ahmadTea2 from '../assets/ahmadtea/ahmad-2.jpg';
-import biorganicImg from '../assets/brands/biorganic.png';
+import biorganicImg from '../assets/brands/biorganic.jpg';
 
 const BEHANCE_URL = 'https://www.behance.net/muroddadaboev';
 
 const projectsData = [
+  {
+    id: 8,
+    title: 'Biorganic — E-Commerce Website',
+    category: 'Full-Stack Product',
+    type: 'Web App',
+    icon: <Monitor size={20} />,
+    description: "Organik quritilgan mahsulotlar va yong'oq mahsulotlari sotish va ishlab chiqarish bilan shug'ullanuvchi katta kompaniya uchun web sayt va dizayn.",
+    tags: ['E-Commerce', 'Web Design', 'Full-Stack'],
+    color: '#f59e0b',
+    status: 'In Progress',
+    year: '2026–Present',
+    highlights: [
+      'Web sayt dizayni va ishlab chiqish',
+      'E-Commerce platformasi',
+      'Organik mahsulotlar katalogi',
+      'Kompaniya brendingi',
+    ],
+    images: [biorganicImg],
+    behanceUrl: 'https://www.biorganic.store/',
+    isFeatured: true,
+    bgColor: '#ffffff',
+    imgStyle: { objectFit: 'contain', padding: '5%', transform: 'scale(1.15)' }
+  },
   {
     id: 1,
     title: 'Updive — SIEM Platform',
@@ -170,30 +193,7 @@ const projectsData = [
     ],
     images: [],
     behanceUrl: 'https://www.behance.net/muroddadaboev',
-  },
-  {
-    id: 8,
-    title: 'Biorganic — E-Commerce Website',
-    category: 'Full-Stack Product',
-    type: 'Web App',
-    icon: <Monitor size={20} />,
-    description: "Organik quritilgan mahsulotlar va yong'oq mahsulotlari sotish va ishlab chiqarish bilan shug'ullanuvchi katta kompaniya uchun web sayt va dizayn.",
-    tags: ['E-Commerce', 'Web Design', 'Full-Stack'],
-    color: '#f59e0b',
-    status: 'In Progress',
-    year: '2026–Present',
-    highlights: [
-      'Web sayt dizayni va ishlab chiqish',
-      'E-Commerce platformasi',
-      'Organik mahsulotlar katalogi',
-      'Kompaniya brendingi',
-    ],
-    images: [biorganicImg],
-    behanceUrl: 'https://www.biorganic.store/',
-    isFeatured: true,
-    bgColor: '#ffffff',
-    imgStyle: { objectFit: 'contain', padding: '10%' }
-  },
+  }
 ];
 
 const categoryFilters = ['Barchasi', 'UX/UI Design', 'Backend Engineering', 'Full-Stack Product', 'Graphic Design'];

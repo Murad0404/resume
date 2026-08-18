@@ -11,7 +11,7 @@ import updiveBrandImg from '../assets/brands/updive.png';
 import kpiImg from '../assets/brands/kpi.png';
 import datasiteImg from '../assets/brands/datasite.png';
 import ahmadTea1 from '../assets/ahmadtea/ahmad-new.jpg';
-import biorganicImg from '../assets/brands/biorganic.png';
+import biorganicImg from '../assets/brands/biorganic.jpg';
 const Home = () => {
   const { t } = useLanguage();
   const { openContactModal } = useModal();
@@ -36,13 +36,13 @@ const Home = () => {
   ];
 
   const homeProjects = [
+    { id: 8,  tag: 'WEB & DESIGN',   title: 'Biorganic',            desc: 'E-Commerce Website',     link: '/projects', img: biorganicImg, bgColor: '#ffffff', imgStyle: { objectFit: 'contain', padding: '5%', transform: 'scale(1.15)' } },
     { id: 10, tag: 'UX/UI DESIGN',   title: 'UPDIVE',               desc: 'Enterprise Dashboard',  link: '/projects', img: updiveBrandImg },
     { id: 1,  tag: 'MIDDLE UX/UI',   title: 'DATAGAZE',             desc: t.stats?.cyber || 'Cybersecurity UX/UI', link: '/projects', img: datagazeImg },
     { id: 6,  tag: 'JAVA ENGINEER',  title: 'MIO BEAUTY',          desc: 'REST API Backend',      link: '/projects', img: mioBeautyImg },
     { id: 4,  tag: 'JAVA DEVELOPER', title: 'KPI.com',              desc: 'ERP Module Development', link: '/projects', img: kpiImg },
     { id: 5,  tag: 'GRAPHIC DESIGN', title: 'Ahmad Tea',            desc: 'Social Media Visuals',   link: '/projects', img: ahmadTea1 },
     { id: 7,  tag: 'GRAPHIC DESIGN', title: 'Datasite Technology',  desc: 'Graphic Design',         link: '/projects', img: datasiteImg },
-    { id: 8,  tag: 'WEB & DESIGN',   title: 'Biorganic',            desc: 'E-Commerce Website',     link: '/projects', img: biorganicImg, bgColor: '#ffffff', imgStyle: { objectFit: 'contain', padding: '10%' } },
   ];
 
   return (
