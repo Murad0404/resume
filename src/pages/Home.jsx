@@ -41,6 +41,7 @@ const Home = () => {
     { id: 4,  tag: 'JAVA DEVELOPER', title: 'KPI.com',              desc: 'ERP Module Development', link: '/projects', img: kpiImg },
     { id: 5,  tag: 'GRAPHIC DESIGN', title: 'Ahmad Tea',            desc: 'Social Media Visuals',   link: '/projects', img: ahmadTea1 },
     { id: 7,  tag: 'GRAPHIC DESIGN', title: 'Datasite Technology',  desc: 'Graphic Design',         link: '/projects', img: datasiteImg },
+    { id: 8,  tag: 'WEB & DESIGN',   title: 'Biorganic',            desc: 'E-Commerce Website',     link: '/projects', img: null },
   ];
 
   return (

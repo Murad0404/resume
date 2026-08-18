@@ -170,6 +170,26 @@ const projectsData = [
     images: [],
     behanceUrl: 'https://www.behance.net/muroddadaboev',
   },
+  {
+    id: 8,
+    title: 'Biorganic — E-Commerce Website',
+    category: 'Full-Stack Product',
+    type: 'Web App',
+    icon: <Monitor size={20} />,
+    description: "Organik quritilgan mahsulotlar va yong'oq mahsulotlari sotish va ishlab chiqarish bilan shug'ullanuvchi katta kompaniya uchun web sayt va dizayn.",
+    tags: ['E-Commerce', 'Web Design', 'Full-Stack'],
+    color: '#f59e0b',
+    status: 'In Progress',
+    year: '2026–Present',
+    highlights: [
+      'Web sayt dizayni va ishlab chiqish',
+      'E-Commerce platformasi',
+      'Organik mahsulotlar katalogi',
+      'Kompaniya brendingi',
+    ],
+    images: [],
+    behanceUrl: 'https://www.biorganic.store/',
+  },
 ];
 
 const categoryFilters = ['Barchasi', 'UX/UI Design', 'Backend Engineering', 'Full-Stack Product', 'Graphic Design'];
