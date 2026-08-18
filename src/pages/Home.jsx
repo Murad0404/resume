@@ -36,7 +36,7 @@ const Home = () => {
   ];
 
   const homeProjects = [
-    { id: 8,  tag: 'WEB & DESIGN',   title: 'Biorganic',            desc: 'E-Commerce Website',     link: '/projects', img: biorganicImg, bgColor: '#55983b', imgStyle: { objectFit: 'contain', padding: '15%', transform: 'scale(1.15)' } },
+    { id: 8,  tag: 'WEB & DESIGN',   title: 'Biorganic',            desc: 'E-Commerce Website',     link: '/projects', img: biorganicImg, bgColor: '#66a136', imgStyle: { objectFit: 'contain', padding: '0%', transform: 'scale(1.25)' } },
     { id: 10, tag: 'UX/UI DESIGN',   title: 'UPDIVE',               desc: 'Enterprise Dashboard',  link: '/projects', img: updiveBrandImg },
     { id: 1,  tag: 'MIDDLE UX/UI',   title: 'DATAGAZE',             desc: t.stats?.cyber || 'Cybersecurity UX/UI', link: '/projects', img: datagazeImg },
     { id: 6,  tag: 'JAVA ENGINEER',  title: 'MIO BEAUTY',          desc: 'REST API Backend',      link: '/projects', img: mioBeautyImg },
